@@ -1,0 +1,98 @@
+<style class="tracy-debug">
+	#tracy-debug .tracy-mode-float .tracy-inner,
+	#tracy-routing-panel .tracy-inner{overflow-x:visible;overflow-y:auto;max-width:1200px;max-height:800px;}
+	#tracy-routing-panel table.routes-configuration tr.matched-by-route td{background:#BDE678 !important;}
+	#tracy-routing-panel table.routes-configuration tr.matched-by-default td{background:#C1D3FF !important;}
+	#tracy-routing-panel table.routes-configuration tr td{font:12px/1.5em Consolas, monospace !important;white-space:nowrap;}
+	#tracy-routing-panel table.routes-configuration tr td .c0{background:#97e5ff;}
+	#tracy-routing-panel table.routes-configuration tr td .c1{background:#8dff8d;}
+	#tracy-routing-panel table.routes-configuration tr td .c2{background:#f98fff;}
+	#tracy-routing-panel table.routes-configuration tr td .c3{background:#ff9a9a;}
+	#tracy-routing-panel table.routes-configuration tr td .c4{background:#ffb836;}
+	#tracy-routing-panel table.routes-configuration tr td .c5{background:#ffff00;}
+	#tracy-routing-panel table.routes-configuration tr td .light{color:#aaa;}
+	#tracy-routing-panel table.routes-configuration tr td .mvc-link{display:inline-block;}
+	#tracy-routing-panel table.routes-configuration tr td .params{display:block;margin-left:10px;}
+	#tracy-routing-panel table.routes-configuration tr td pre{display:inline;background:transparent !important;font:12px/1.5em !important;}
+	#tracy-routing-panel p.source-url{white-space:nowrap;font:12px/1.5em Consolas, monospace !important;}
+	#tracy-routing-panel p.source-url span{background:#ddd;white-space:nowrap;display:inline-block;padding:0 3px;}
+</style>
+<div id="tracy-routing-panel">
+	<h1><?php echo htmlSpecialChars($view->panelTitle, ENT_NOQUOTES, 'UTF-8'); ?></h1>
+	<div class="tracy-inner">
+        <?php if (empty($view->items)): ?>
+			<p>No routes defined.</p>
+		<?php else: ?>
+			<table class="routes-configuration">
+				<thead>
+					<tr>
+						<th></th>
+						<th>Pattern</th>
+						<th>Defaults</th>
+						<th>Matched as</th>
+					</tr>
+				</thead>
+				<tbody>
+					<?php foreach ($view->items as & $item): ?>
+						<tr class="<?php
+							echo ($item->matched == 1) ? 'matched-by-route' : (($item->matched == 2) ? 'matched-by-default' : '');
+						?>">
+							<td>
+								<?php echo ($item->matched == 1) ? '✓' : (($item->matched == 2) ? '≈' : ''); ?>
+							</td>
+							<td title="<?php echo $item->routeClass; ?>">
+								<span class="pattern"><?php
+									echo $item->routePattern;
+								?></span><br />&nbsp;&nbsp;<span class="reverse"><?php
+									echo $item->routeReverse;
+								?></span>
+							</td>
+							<td>
+								<?php if ($item->routeCtrlActionLink[0]): ?>
+									<a class="mvc-link" title="<?php
+										echo $item->routeCtrlActionLink[1];
+									?>" href="<?php echo $item->routeCtrlActionLink[0]; ?>"><b><?php
+										echo $item->routeCustomName ? $item->routeName : $item->routeCtrlActionName ;
+									?></b></a>
+								<?php else: ?>
+									<b class="mvc-link" title="Unable to locate Controller/Action"><?php
+										echo $item->routeCustomName ? $item->routeName : $item->routeCtrlActionName ;
+									?></b>
+								<?php endif; ?>
+								<span class="params">
+									<?php foreach ($item->routeParams as $key => $value): ?>
+										<?php echo $key; ?>&nbsp;=&nbsp;<?php echo $value; ?>
+									<?php endforeach; ?>
+								</span>
+							</td>
+							<?php if ($item->matched): ?>
+								<td>
+									<?php if ($item->matchedCtrlActionLink[0]): ?>
+										<a class="mvc-link" title="<?php
+											echo $item->matchedCtrlActionLink[1];
+										?>" href="<?php echo $item->matchedCtrlActionLink[0]; ?>">
+											<b><?php echo $item->matchedCtrlActionName; ?></b>
+										</a>
+									<?php else: ?>
+										<b class="mvc-link" title="Unable to locate Controller/Action"><?php echo $item->matchedCtrlActionName; ?></b>
+									<?php endif; ?>
+									<span class="params">
+										<?php foreach ($item->matchedParams as $key => $value): ?>
+											<?php echo $key; ?>&nbsp;=&nbsp;<?php echo $value; ?>
+										<?php endforeach; ?>
+									</span>
+								</td>
+							<?php else: ?>
+								<td></td>
+							<?php endif; ?>
+						</tr>
+					<?php endforeach; ?>
+				</tbody>
+			</table>
+		<?php endif ?>
+		<p class="source-url">
+            <?php echo $view->requestMethod; ?>
+			<?php echo $view->requestBaseUrl; ?><span><?php echo $view->requestRequestPath; ?></span>
+		</p>
+	</div>
+</div>
