@@ -1,5 +1,5 @@
 # MvcCore Extension - Tracy Routing Panel
-Extension for MvcCore_Debug_Tracy extension to render and add into tracy debug panel all configured routes into current MvcCore application router and to display currently matched route.
+Extension for MvcCoreExt_Tracy extension to render and add into tracy debug panel all configured routes into current MvcCore application router and to display currently matched route.
 
 ## Installation
 ```shell
