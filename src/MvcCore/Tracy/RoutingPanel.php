@@ -182,6 +182,7 @@ class MvcCoreExt_Tracy_RoutingPanel implements \Tracy\IBarPanel {
 	 */
 	protected static function completeParams ($params = array(), $skipCtrlActionRecord = TRUE) {
 		$result = array();
+		if (is_null($params)) return array();
 		foreach ($params as $key1 => $value1) {
 			if ($skipCtrlActionRecord) if ($key1 == 'controller' || $key1 == 'action') continue;
 			$key2 = htmlSpecialChars($key1, ENT_IGNORE, 'UTF-8');
