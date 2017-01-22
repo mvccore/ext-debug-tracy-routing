@@ -79,7 +79,7 @@ class MvcCoreExt_Tracy_RoutingPanel implements \Tracy\IBarPanel {
 		// complete panel title
 		$panelTitle = 'no route';
 		if (!is_null($currentRoute)) {
-			$ctrlAndAction = $currentRoute->Controller . '::' . $currentRoute->Action;
+			$ctrlAndAction = $currentRoute->Controller . ':' . $currentRoute->Action;
 			if ($ctrlAndAction != $currentRoute->Name) {
 				$panelTitle = $currentRoute->Name . ' (' . $ctrlAndAction . ')';
 			} else {
@@ -141,7 +141,7 @@ class MvcCoreExt_Tracy_RoutingPanel implements \Tracy\IBarPanel {
 		$routeReverse = static::completeFormatedPatternOrReverseCharGroups($route->Reverse, array('{', '}'));
 
 		// third column
-		$routeCtrlActionName = $route->Controller . '::' . $route->Action;
+		$routeCtrlActionName = $route->Controller . ':' . $route->Action;
 		$routeCtrlActionLink = static::completeCtrlActionLink($route->Controller, $route->Action);
 		$routeParams = static::completeParams($route->Params, FALSE);
 
@@ -153,7 +153,7 @@ class MvcCoreExt_Tracy_RoutingPanel implements \Tracy\IBarPanel {
 			$reqParams = $request->Params;
 			$ctrlPascalCase = MvcCore_Tool::GetPascalCaseFromDashed($reqParams['controller']);
 			$actionPascalCase = MvcCore_Tool::GetPascalCaseFromDashed($reqParams['action']);
-			$matchedCtrlActionName = $ctrlPascalCase . '::' . $actionPascalCase;
+			$matchedCtrlActionName = $ctrlPascalCase . ':' . $actionPascalCase;
 			$matchedCtrlActionLink = static::completeCtrlActionLink($ctrlPascalCase, $actionPascalCase);
 			$matchedParams = static::completeParams($reqParams, TRUE);
 		}
@@ -300,7 +300,7 @@ class MvcCoreExt_Tracy_RoutingPanel implements \Tracy\IBarPanel {
 		} else {
 			$fullControllerClassName = 'App_Controllers_' . $ctrlName;
 		}
-		$result = array('', $fullControllerClassName . '::' . $actionName . 'Action');
+		$result = array('', $fullControllerClassName . ':' . $actionName . 'Action');
 		try {
 			$ctrlReflection = new ReflectionClass($fullControllerClassName);
 			if ($ctrlReflection instanceof ReflectionClass) {
@@ -310,7 +310,7 @@ class MvcCoreExt_Tracy_RoutingPanel implements \Tracy\IBarPanel {
 					$line = $actionReflection->getStartLine();
 					$result = array(
 						\Tracy\Helpers::editorUri($file, $line),
-						$fullControllerClassName . '::' . $actionName . 'Action'
+						$fullControllerClassName . ':' . $actionName . 'Action'
 					);
 				}
 			}
