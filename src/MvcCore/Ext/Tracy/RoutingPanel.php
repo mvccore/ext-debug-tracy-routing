@@ -8,10 +8,18 @@
  * the LICENSE.md file that are distributed with this source code.
  *
  * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
- * @license		https://mvccore.github.io/docs/mvccore/3.0.0/LICENCE.md
+ * @license		https://mvccore.github.io/docs/mvccore/4.0.0/LICENCE.md
  */
 
-class MvcCoreExt_Tracy_RoutingPanel implements \Tracy\IBarPanel {
+namespace MvcCore\Ext\Debug\Tracy;
+
+class RoutingPanel implements \Tracy\IBarPanel {
+	/**
+	 * MvcCore Extension - Debug - Tracy Panel - Routing - version:
+	 * Comparation by PHP function version_compare();
+	 * @see http://php.net/manual/en/function.version-compare.php
+	 */
+	const VERSION = '4.0.0';
 	/**
 	 * Debug panel id
 	 * @var string
@@ -20,7 +28,7 @@ class MvcCoreExt_Tracy_RoutingPanel implements \Tracy\IBarPanel {
 	/**
 	 * Prepared view data, only once,
 	 * to render debug tab and debug panel content.
-	 * @var stdClass
+	 * @var \stdClass
 	 */
 	protected static $viewData = NULL;
 	/**
@@ -55,7 +63,7 @@ class MvcCoreExt_Tracy_RoutingPanel implements \Tracy\IBarPanel {
 	/**
 	 * Set up view data, if data are completed,
 	 * return them directly.
-	 * - complete basic MvcCore core objects to complere other view data
+	 * - complete basic \MvcCore core objects to complere other view data
 	 * - complete panel title
 	 * - complete routes table items
 	 * - set result data into static field
@@ -64,16 +72,16 @@ class MvcCoreExt_Tracy_RoutingPanel implements \Tracy\IBarPanel {
 	public static function SetUpViewData () {
 		if (static::$viewData) return static::$viewData;
 
-		// complete basic MvcCore core objects to complere other view data
-		$app = MvcCore::GetInstance();
-		/** @var $request MvcCore_Request */
+		// complete basic \MvcCore core objects to complere other view data
+		$app = \MvcCore::GetInstance();
+		/** @var $request \MvcCore\Request */
 		$request = $app->GetRequest();
-		/** @var $router MvcCore_Router */
+		/** @var $router \MvcCore\Router */
 		$router = $app->GetRouter();
-		/** @var $routes MvcCore_Route[] */
-		if (is_null($router)) return array(); // this is only by media site version switching
+		/** @var $routes \MvcCore\Route[] */
+		if (is_null($router)) return (object) array(); // this is only by media site version switching
 		$routes = $router->GetRoutes();
-		/** @var $currentRoute MvcCore_Route */
+		/** @var $currentRoute \MvcCore\Route */
 		$currentRoute = $router->GetCurrentRoute();
 
 		// complete panel title
@@ -95,10 +103,10 @@ class MvcCoreExt_Tracy_RoutingPanel implements \Tracy\IBarPanel {
 			if ($currentRoute && $route->Name == $currentRoute->Name) $matched = TRUE;
 		}
 		if (!$matched) {
-			if ($currentRoute instanceof MvcCore_Route) {
+			if ($currentRoute instanceof \MvcCore\Route) {
 				$currentRoute->SetPattern('index.php?controller=...&action=...');
 			} else {
-				$currentRoute = new MvcCore_Route(array('name' => '')); // not found
+				$currentRoute = new \MvcCore\Route(array('name' => '')); // not found
 			}
 			$item = static::completeItem($currentRoute, $currentRoute, $request);
 			$item->matched = 2;
@@ -126,18 +134,18 @@ class MvcCoreExt_Tracy_RoutingPanel implements \Tracy\IBarPanel {
 	 * - third column
 	 * - fourth column only if route is the same ass current route
 	 * - complete result collection and returns it
-	 * @param MvcCore_Route $currentRoute
-	 * @param MvcCore_Route $route 
-	 * @param MvcCore_Request $request 
+	 * @param \MvcCore\Route $currentRoute
+	 * @param \MvcCore\Route $route 
+	 * @param \MvcCore\Request $request 
 	 * @return object
 	 */
-	protected static function completeItem (MvcCore_Route & $currentRoute = NULL, MvcCore_Route & $route = NULL, MvcCore_Request & $request = NULL) {
+	protected static function completeItem (\MvcCore\Route & $currentRoute = NULL, \MvcCore\Route & $route = NULL, \MvcCore\Request & $request = NULL) {
 		// first column
 		$matched = $currentRoute && $currentRoute->Name == $route->Name ? 1 : 0;
 
 		// second column
 		$routeClass = htmlSpecialChars(get_class($route), ENT_QUOTES, 'UTF-8');
-		$router = MvcCore_Router::GetInstance();
+		$router = \MvcCore\Router::GetInstance();
 		$lang = isset($router->Lang) ? $router->Lang : '';
 		$defaultLang = isset($router->DefaultLang) ? $router->DefaultLang : '';
 		$routePattern = static::getRouteLocalizedRecord($route, 'Pattern', $lang, $defaultLang);
@@ -156,9 +164,9 @@ class MvcCoreExt_Tracy_RoutingPanel implements \Tracy\IBarPanel {
 		$matchedParams = array();
 		if ($matched) {
 			$reqParams = $request->Params;
-			$ctrlPascalCase = MvcCore_Tool::GetPascalCaseFromDashed($reqParams['controller']);
-			$actionPascalCase = MvcCore_Tool::GetPascalCaseFromDashed($reqParams['action']);
-			$ctrlPascalCase = str_replace('/', strpos($route->Controller, '\\') !== FALSE ? '\\' : '_', $ctrlPascalCase);
+			$ctrlPascalCase = \MvcCore\Tool::GetPascalCaseFromDashed($reqParams['controller']);
+			$actionPascalCase = \MvcCore\Tool::GetPascalCaseFromDashed($reqParams['action']);
+			$ctrlPascalCase = str_replace('/', '\\', $ctrlPascalCase);
 			$matchedCtrlActionName = $ctrlPascalCase . ':' . $actionPascalCase;
 			$matchedCtrlActionLink = static::completeCtrlActionLink($ctrlPascalCase, $actionPascalCase);
 			$matchedParams = static::completeParams($route, $reqParams, TRUE);
@@ -186,10 +194,10 @@ class MvcCoreExt_Tracy_RoutingPanel implements \Tracy\IBarPanel {
 	 * @param bool  $skipCtrlActionRecord 
 	 * @return array
 	 */
-	protected static function completeParams (MvcCore_Route & $route, $params = array(), $skipCtrlActionRecord = TRUE) {
+	protected static function completeParams (\MvcCore\Route & $route, $params = array(), $skipCtrlActionRecord = TRUE) {
 		$result = array();
 		//if (gettype($route->Pattern) == 'array') {
-			$router = MvcCore_Router::GetInstance();
+			$router = \MvcCore\Router::GetInstance();
 			if (isset($router->Lang) && $router->Lang) {
 				$result['lang'] = $value2 = '<span class="tracy-dump-string">"' . $router->Lang . '"</span><br />';
 			}
@@ -307,20 +315,18 @@ class MvcCoreExt_Tracy_RoutingPanel implements \Tracy\IBarPanel {
 	 */
 	protected static function completeCtrlActionLink ($ctrlName = '', $actionName = '') {
 		$fullControllerClassName = '';
-		if (substr($ctrlName, 0, 1) == '/') {
+		if (substr($ctrlName, 0, 1) == '\\') {
 			$fullControllerClassName = substr($ctrlName, 1);
-		} else if (strpos($ctrlName, '\\') !== FALSE) {
-			$fullControllerClassName = 'App\\Controllers\\' . $ctrlName;
 		} else {
-			$fullControllerClassName = 'App_Controllers_' . $ctrlName;
+			$fullControllerClassName = '\\App\\Controllers\\' . $ctrlName;
 		}
 		$result = array('', $fullControllerClassName . ':' . $actionName . 'Action');
 		try {
-			$ctrlReflection = new ReflectionClass($fullControllerClassName);
-			if ($ctrlReflection instanceof ReflectionClass) {
+			$ctrlReflection = new \ReflectionClass($fullControllerClassName);
+			if ($ctrlReflection instanceof \ReflectionClass) {
 				$file = $ctrlReflection->getFileName();
 				$actionReflection = $ctrlReflection->getMethod($actionName . 'Action');
-				if ($actionReflection instanceof ReflectionMethod) {
+				if ($actionReflection instanceof \ReflectionMethod) {
 					$line = $actionReflection->getStartLine();
 					$result = array(
 						\Tracy\Helpers::editorUri($file, $line),
@@ -334,13 +340,13 @@ class MvcCoreExt_Tracy_RoutingPanel implements \Tracy\IBarPanel {
 	}
 	/**
 	 * Get route non-localized or localized record - 'Pattern' and 'Reverse'
-	 * @param MvcCore_Route $route
+	 * @param \MvcCore\Route $route
 	 * @param string $routeRecordKey
 	 * @param string $lang
 	 * @param string $defaultLang
 	 * @return string
 	 */
-	protected static function getRouteLocalizedRecord (MvcCore_Route & $route, $routeRecordKey = '', $lang = '', $defaultLang = '') {
+	protected static function getRouteLocalizedRecord (\MvcCore\Route & $route, $routeRecordKey = '', $lang = '', $defaultLang = '') {
 		if (gettype($route->$routeRecordKey) == 'array') {
 			$routeRecordKey = $route->$routeRecordKey;
 			if (isset($routeRecordKey[$lang])) {
