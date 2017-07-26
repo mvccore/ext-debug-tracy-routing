@@ -334,7 +334,7 @@ class RoutingPanel implements \Tracy\IBarPanel {
 					);
 				}
 			}
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 		}
 		return $result;
 	}
