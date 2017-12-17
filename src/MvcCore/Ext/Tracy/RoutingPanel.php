@@ -19,7 +19,7 @@ class RoutingPanel implements \Tracy\IBarPanel {
 	 * Comparation by PHP function version_compare();
 	 * @see http://php.net/manual/en/function.version-compare.php
 	 */
-	const VERSION = '4.2.0';
+	const VERSION = '4.3.1';
 	/**
 	 * Debug panel id
 	 * @var string
@@ -127,7 +127,7 @@ class RoutingPanel implements \Tracy\IBarPanel {
 	/**
 	 * Complete single route table row view data.
 	 * In very special cases $currentRoute object shoud be null and
-	 * also $route object shoud be null, those cases are mostly 
+	 * also $route object shoud be null, those cases are mostly
 	 * some combinations with server errors (500) or not found errors (404).
 	 * - first column
 	 * - second column
@@ -135,8 +135,8 @@ class RoutingPanel implements \Tracy\IBarPanel {
 	 * - fourth column only if route is the same ass current route
 	 * - complete result collection and returns it
 	 * @param \MvcCore\Route $currentRoute
-	 * @param \MvcCore\Route $route 
-	 * @param \MvcCore\Request $request 
+	 * @param \MvcCore\Route $route
+	 * @param \MvcCore\Request $request
 	 * @return object
 	 */
 	protected static function completeItem (\MvcCore\Route & $currentRoute = NULL, \MvcCore\Route & $route = NULL, \MvcCore\Request & $request = NULL) {
@@ -190,8 +190,8 @@ class RoutingPanel implements \Tracy\IBarPanel {
 	}
 	/**
 	 * Complete third or fourth column params collection template string.
-	 * @param array $params 
-	 * @param bool  $skipCtrlActionRecord 
+	 * @param array $params
+	 * @param bool  $skipCtrlActionRecord
 	 * @return array
 	 */
 	protected static function completeParams (\MvcCore\Route & $route, $params = array(), $skipCtrlActionRecord = TRUE) {
@@ -222,7 +222,7 @@ class RoutingPanel implements \Tracy\IBarPanel {
 	}
 	/**
 	 * Add into route regular expression pattern or reverse ($route->Pattern
-	 * or $route->Reverse) around all detected character groups special 
+	 * or $route->Reverse) around all detected character groups special
 	 * html span elements to color them in template.
 	 * @param string   $str      route pattern string or reverse string
 	 * @param string[] $brackets array with specified opening bracket and closing bracket type
@@ -291,8 +291,8 @@ class RoutingPanel implements \Tracy\IBarPanel {
 						$level -= 1;
 						if ($level === 0) {
 							$result[] = array(
-								mb_substr($str, $groupBegin, $itemPos - $groupBegin + 1), 
-								$groupBegin, 
+								mb_substr($str, $groupBegin, $itemPos - $groupBegin + 1),
+								$groupBegin,
 								$itemPos
 							);
 						}
@@ -310,7 +310,7 @@ class RoutingPanel implements \Tracy\IBarPanel {
 	 *  0 - editor link url
 	 *  1 - link text
 	 * @param string $ctrlName
-	 * @param string $actionName 
+	 * @param string $actionName
 	 * @return array
 	 */
 	protected static function completeCtrlActionLink ($ctrlName = '', $actionName = '') {
