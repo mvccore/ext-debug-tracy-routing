@@ -19,7 +19,7 @@ class RoutingPanel implements \Tracy\IBarPanel {
 	 * Comparation by PHP function version_compare();
 	 * @see http://php.net/manual/en/function.version-compare.php
 	 */
-	const VERSION = '4.3.1';
+	const VERSION = '5.0.0-alpha';
 	/**
 	 * Debug panel id
 	 * @var string
@@ -73,13 +73,13 @@ class RoutingPanel implements \Tracy\IBarPanel {
 		if (static::$viewData) return static::$viewData;
 
 		// complete basic \MvcCore core objects to complere other view data
-		$app = \MvcCore::GetInstance();
+		$app = \MvcCore\Application::GetInstance();
 		/** @var $request \MvcCore\Request */
 		$request = $app->GetRequest();
 		/** @var $router \MvcCore\Router */
 		$router = $app->GetRouter();
 		/** @var $routes \MvcCore\Route[] */
-		if (is_null($router)) return (object) array(); // this is only by media site version switching
+		if ($router === NULL) return (object) array(); // this could be only by media site version switching
 		$routes = $router->GetRoutes();
 		/** @var $currentRoute \MvcCore\Route */
 		$currentRoute = $router->GetCurrentRoute();
@@ -87,9 +87,9 @@ class RoutingPanel implements \Tracy\IBarPanel {
 		// complete panel title
 		$panelTitle = 'no route';
 		if (!is_null($currentRoute)) {
-			$ctrlAndAction = $currentRoute->Controller . ':' . $currentRoute->Action;
-			if ($ctrlAndAction != $currentRoute->Name) {
-				$panelTitle = $currentRoute->Name . ' (' . $ctrlAndAction . ')';
+			$ctrlAndAction = $currentRoute->GetControllerAction();
+			if ($ctrlAndAction != $currentRoute->GetName()) {
+				$panelTitle = $currentRoute->GetName() . ' (' . $ctrlAndAction . ')';
 			} else {
 				$panelTitle = $ctrlAndAction;
 			}
@@ -100,7 +100,7 @@ class RoutingPanel implements \Tracy\IBarPanel {
 		$matched = FALSE;
 		foreach ($routes as & $route) {
 			$items[] = static::completeItem($currentRoute, $route, $request);
-			if ($currentRoute && $route->Name == $currentRoute->Name) $matched = TRUE;
+			if ($currentRoute && $route->GetName() == $currentRoute->GetName()) $matched = TRUE;
 		}
 		if (!$matched) {
 			if ($currentRoute instanceof \MvcCore\Route) {
@@ -140,30 +140,33 @@ class RoutingPanel implements \Tracy\IBarPanel {
 	 * @return object
 	 */
 	protected static function completeItem (\MvcCore\Route & $currentRoute = NULL, \MvcCore\Route & $route = NULL, \MvcCore\Request & $request = NULL) {
+		$route->InitAll();
+
 		// first column
-		$matched = $currentRoute && $currentRoute->Name == $route->Name ? 1 : 0;
+		$matched = $currentRoute && $currentRoute->GetName() == $route->GetName() ? 1 : 0;
 
 		// second column
+		$app = \MvcCore\Application::GetInstance();
 		$routeClass = htmlSpecialChars(get_class($route), ENT_QUOTES, 'UTF-8');
-		$router = \MvcCore\Router::GetInstance();
-		$lang = isset($router->Lang) ? $router->Lang : '';
-		$defaultLang = isset($router->DefaultLang) ? $router->DefaultLang : '';
-		$routePattern = static::getRouteLocalizedRecord($route, 'Pattern', $lang, $defaultLang);
-		$routeReverse = static::getRouteLocalizedRecord($route, 'Reverse', $lang, $defaultLang);
+		$requestLang = $app->GetRequest()->GetLang();
+		$router = $app->GetRouter();
+		$defaultLang = method_exists($router, 'GetDefaultLang') ? $router->GetDefaultLang() : '';
+		$routePattern = static::getRouteLocalizedRecord($route, $route->GetMatch(), $requestLang, $defaultLang);
+		$routeReverse = static::getRouteLocalizedRecord($route, $route->GetReverse(), $requestLang, $defaultLang);
 		$routePattern = static::completeFormatedPatternOrReverseCharGroups($routePattern, array('(', ')'));
 		$routeReverse = static::completeFormatedPatternOrReverseCharGroups($routeReverse, array('{', '}'));
 
 		// third column
-		$routeCtrlActionName = $route->Controller . ':' . $route->Action;
-		$routeCtrlActionLink = static::completeCtrlActionLink($route->Controller, $route->Action);
-		$routeParams = static::completeParams($route, $route->Params, FALSE);
+		$routeCtrlActionName = $route->GetControllerAction();
+		$routeCtrlActionLink = static::completeCtrlActionLink($route->GetController(), $route->GetAction());
+		$routeParams = static::completeParams($route, $route->GetDefaults(), FALSE);
 
 		// fourth column only if route is the same ass current route
 		$matchedCtrlActionName = '';
 		$matchedCtrlActionLink = array();
 		$matchedParams = array();
 		if ($matched) {
-			$reqParams = $request->Params;
+			$reqParams = $request->GetParams();
 			$ctrlPascalCase = \MvcCore\Tool::GetPascalCaseFromDashed($reqParams['controller']);
 			$actionPascalCase = \MvcCore\Tool::GetPascalCaseFromDashed($reqParams['action']);
 			$ctrlPascalCase = str_replace('/', '\\', $ctrlPascalCase);
@@ -180,8 +183,8 @@ class RoutingPanel implements \Tracy\IBarPanel {
 			'routeReverse'			=> $routeReverse,
 			'routeCtrlActionName'	=> $routeCtrlActionName,
 			'routeCtrlActionLink'	=> $routeCtrlActionLink,
-			'routeName'				=> $route->Name,
-			'routeCustomName'		=> $routeCtrlActionName !== $route->Name,
+			'routeName'				=> $route->GetName(),
+			'routeCustomName'		=> $routeCtrlActionName !== $route->GetName(),
 			'routeParams'			=> $routeParams,
 			'matchedCtrlActionName'	=> $matchedCtrlActionName,
 			'matchedCtrlActionLink'	=> $matchedCtrlActionLink,
@@ -196,13 +199,13 @@ class RoutingPanel implements \Tracy\IBarPanel {
 	 */
 	protected static function completeParams (\MvcCore\Route & $route, $params = array(), $skipCtrlActionRecord = TRUE) {
 		$result = array();
-		//if (gettype($route->Pattern) == 'array') {
-			$router = \MvcCore\Router::GetInstance();
-			if (isset($router->Lang) && $router->Lang) {
-				$result['lang'] = $value2 = '<span class="tracy-dump-string">"' . $router->Lang . '"</span><br />';
+		if (gettype($route->GetPattern()) == 'array') {
+			$requestLang = \MvcCore\Application::GetInstance()->GetRequest()->GetLang();
+			if ($requestLang !== NULL) {
+				$result['lang'] = $value2 = '<span class="tracy-dump-string">"' . $requestLang . '"</span><br />';
 			}
-		//}
-		if (is_null($params)) return $result;
+		}
+		if ($params === NULL) return $result;
 		foreach ($params as $key1 => $value1) {
 			if ($skipCtrlActionRecord) if ($key1 == 'controller' || $key1 == 'action') continue;
 			$key2 = htmlSpecialChars($key1, ENT_IGNORE, 'UTF-8');
@@ -221,8 +224,8 @@ class RoutingPanel implements \Tracy\IBarPanel {
 		return $result;
 	}
 	/**
-	 * Add into route regular expression pattern or reverse ($route->Pattern
-	 * or $route->Reverse) around all detected character groups special
+	 * Add into route regular expression pattern or reverse ($route->GetPattern()
+	 * or $route->GetReverse()) around all detected character groups special
 	 * html span elements to color them in template.
 	 * @param string   $str      route pattern string or reverse string
 	 * @param string[] $brackets array with specified opening bracket and closing bracket type
@@ -341,21 +344,20 @@ class RoutingPanel implements \Tracy\IBarPanel {
 	/**
 	 * Get route non-localized or localized record - 'Pattern' and 'Reverse'
 	 * @param \MvcCore\Route $route
-	 * @param string $routeRecordKey
+	 * @param string|array $routeRecord
 	 * @param string $lang
 	 * @param string $defaultLang
 	 * @return string
 	 */
-	protected static function getRouteLocalizedRecord (\MvcCore\Route & $route, $routeRecordKey = '', $lang = '', $defaultLang = '') {
-		if (gettype($route->$routeRecordKey) == 'array') {
-			$routeRecordKey = $route->$routeRecordKey;
-			if (isset($routeRecordKey[$lang])) {
-				return $routeRecordKey[$lang];
-			} else if (isset($routeRecordKey[$defaultLang])) {
-				return $routeRecordKey[$defaultLang];
+	protected static function getRouteLocalizedRecord (\MvcCore\Interfaces\IRoute & $route, $routeRecord = NULL, $lang = '', $defaultLang = '') {
+		if (gettype($routeRecord) == 'array') {
+			if (isset($routeRecord[$lang])) {
+				return $routeRecord[$lang];
+			} else if (isset($routeRecord[$defaultLang])) {
+				return $routeRecord[$defaultLang];
 			}
-			return reset($routeRecordKey);
+			return reset($routeRecord);
 		}
-		return $route->$routeRecordKey;
+		return $routeRecord;
 	}
 }
