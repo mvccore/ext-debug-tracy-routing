@@ -27,6 +27,7 @@
 				<thead>
 					<tr>
 						<th></th>
+						<th>Method</th>
 						<th>Pattern</th>
 						<th>Defaults</th>
 						<th>Matched as</th>
@@ -39,6 +40,9 @@
 						?>">
 							<td>
 								<?php echo ($item->matched == 1) ? '✓' : (($item->matched == 2) ? '≈' : ''); ?>
+							</td>
+							<td>
+								<?php echo ($item->routeMethod === NULL) ? '*' : $item->routeMethod; ?>
 							</td>
 							<td title="<?php echo $item->routeClass; ?>">
 								<span class="pattern"><?php
