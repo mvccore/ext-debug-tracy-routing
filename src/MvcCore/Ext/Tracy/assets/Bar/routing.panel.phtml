@@ -14,23 +14,23 @@
 	#tracy-routing-panel table.routes-configuration tr td .mvc-link{display:inline-block;}
 	#tracy-routing-panel table.routes-configuration tr td .params{display:block;margin-left:10px;}
 	#tracy-routing-panel table.routes-configuration tr td pre{display:inline;background:transparent !important;font:12px/1.5em !important;}
-	#tracy-routing-panel p.source-url{white-space:nowrap;font:12px/1.5em Consolas, monospace !important;}
-	#tracy-routing-panel p.source-url span{background:#ddd;white-space:nowrap;display:inline-block;padding:0 3px;}
+	#tracy-routing-panel p.requested-url{white-space:nowrap;font:12px/1.5em Consolas, monospace !important;}
+	#tracy-routing-panel p.requested-url span{background:#ddd;white-space:nowrap;display:inline-block;padding:0 3px;}
 </style>
 <div id="tracy-routing-panel">
-	<h1><?php echo htmlSpecialChars($view->panelTitle, ENT_NOQUOTES, 'UTF-8'); ?></h1>
+	<h1><?php echo $view->panelTitle; ?></h1>
 	<div class="tracy-inner">
-        <?php if (empty($view->items)): ?>
+		<?php if (empty($view->items)): ?>
 			<p>No routes defined.</p>
 		<?php else: ?>
 			<table class="routes-configuration">
 				<thead>
 					<tr>
 						<th></th>
-						<th>Method</th>
-						<th>Pattern</th>
-						<th>Defaults</th>
-						<th>Matched as</th>
+						<th>HTTP<br />Method</th>
+						<th>Match<br />&nbsp;&nbsp;&nbsp;Reverse</th>
+						<th>Route Name<br />&nbsp;&nbsp;&nbsp;Defaults</th>
+						<th>Matched Controller:Action<br />&nbsp;&nbsp;&nbsp;Matched GET Params</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -41,47 +41,45 @@
 							<td>
 								<?php echo ($item->matched == 1) ? '✓' : (($item->matched == 2) ? '≈' : ''); ?>
 							</td>
-							<td>
-								<?php echo ($item->routeMethod === NULL) ? '*' : $item->routeMethod; ?>
-							</td>
-							<td title="<?php echo $item->routeClass; ?>">
+							<td><?php echo $item->method; ?></td>
+							<td title="<?php echo $item->className; ?>">
 								<span class="pattern"><?php
-									echo $item->routePattern;
+									echo $item->match;
 								?></span><br />&nbsp;&nbsp;<span class="reverse"><?php
-									echo $item->routeReverse;
+									echo $item->reverse;
 								?></span>
 							</td>
 							<td>
-								<?php if ($item->routeCtrlActionLink[0]): ?>
+								<?php if ($item->ctrlActionLink[0]): ?>
 									<a class="mvc-link" title="<?php
-										echo $item->routeCtrlActionLink[1];
-									?>" href="<?php echo $item->routeCtrlActionLink[0]; ?>"><b><?php
-										echo $item->routeCustomName ? $item->routeName : $item->routeCtrlActionName ;
+										echo $item->ctrlActionLink[1];
+									?>" href="<?php echo $item->ctrlActionLink[0]; ?>"><b><?php
+										echo $item->routeName;
 									?></b></a>
 								<?php else: ?>
 									<b class="mvc-link" title="Unable to locate Controller/Action"><?php
-										echo $item->routeCustomName ? $item->routeName : $item->routeCtrlActionName ;
+										echo $item->routeName;
 									?></b>
 								<?php endif; ?>
 								<span class="params">
-									<?php foreach ($item->routeParams as $key => $value): ?>
+									<?php foreach ($item->defaults as $key => $value): ?>
 										<?php echo $key; ?>&nbsp;=&nbsp;<?php echo $value; ?>
 									<?php endforeach; ?>
 								</span>
 							</td>
 							<?php if ($item->matched): ?>
 								<td>
-									<?php if ($item->matchedCtrlActionLink[0]): ?>
+									<?php if ($item->ctrlActionLink[0]): ?>
 										<a class="mvc-link" title="<?php
-											echo $item->matchedCtrlActionLink[1];
-										?>" href="<?php echo $item->matchedCtrlActionLink[0]; ?>">
-											<b><?php echo $item->matchedCtrlActionName; ?></b>
+											echo $item->ctrlActionLink[1];
+										?>" href="<?php echo $item->ctrlActionLink[0]; ?>">
+											<b><?php echo $item->ctrlActionName; ?></b>
 										</a>
 									<?php else: ?>
-										<b class="mvc-link" title="Unable to locate Controller/Action"><?php echo $item->matchedCtrlActionName; ?></b>
+										<b class="mvc-link" title="Unable to locate Controller/Action"><?php echo $item->ctrlActionName; ?></b>
 									<?php endif; ?>
 									<span class="params">
-										<?php foreach ($item->matchedParams as $key => $value): ?>
+										<?php foreach ($item->params as $key => $value): ?>
 											<?php echo $key; ?>&nbsp;=&nbsp;<?php echo $value; ?>
 										<?php endforeach; ?>
 									</span>
@@ -94,9 +92,12 @@
 				</tbody>
 			</table>
 		<?php endif ?>
-		<p class="source-url">
-            <?php echo $view->requestMethod; ?>
-			<?php echo $view->requestBaseUrl; ?><span><?php echo $view->requestRequestPath; ?></span>
-		</p>
+		<?php if (!empty($view->requestedUrl)): ?>
+			<p class="requested-url">
+				<?php echo $view->requestedUrl->method; ?>
+				<?php echo $view->requestedUrl->baseUrl; ?><span><?php echo $view->requestedUrl->path; ?></span>
+			</p>
+		<?php endif ?>
+		<?php echo $this->_debugCode; ?>
 	</div>
 </div>
