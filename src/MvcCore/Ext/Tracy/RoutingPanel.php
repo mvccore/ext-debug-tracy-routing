@@ -183,15 +183,8 @@ class RoutingPanel implements \Tracy\IBarPanel
 	 */
 	protected function initViewPanelTitle () {
 		$panelTitle = 'No route match';
-		if ($this->currentRoute !== NULL) {
-			$ctrlAndAction = $this->currentRoute->GetControllerAction();
-			$currentRouteName = $this->currentRoute->GetName();
-			if ($ctrlAndAction != $currentRouteName) {
-				$panelTitle = $currentRouteName . ' (' . $ctrlAndAction . ')';
-			} else {
-				$panelTitle = $ctrlAndAction;
-			}
-		}
+		if ($this->currentRoute !== NULL)
+			$panelTitle = $this->currentRoute->GetName();
 		$this->view->panelTitle = htmlSpecialChars($panelTitle, ENT_NOQUOTES, 'UTF-8');
 	}
 
