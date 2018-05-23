@@ -11,7 +11,7 @@
  * @license		https://mvccore.github.io/docs/mvccore/4.0.0/LICENCE.md
  */
 
-namespace MvcCore\Ext\Debug\Tracy;
+namespace MvcCore\Ext\Debugs\Tracys;
 
 /**
  * Responsibility - render used routes by application router and mark and render matched route with request params.
@@ -107,7 +107,7 @@ class RoutingPanel implements \Tracy\IBarPanel
 	public function getTab() {
 		ob_start();
 		$view = $this->getViewData();
-		if ($view) include(__DIR__ . '/assets/Bar/routing.tab.phtml');
+		if ($view) include(__DIR__ . '/routing.tab.phtml');
 		return ob_get_clean();
 	}
 	/**
@@ -118,7 +118,7 @@ class RoutingPanel implements \Tracy\IBarPanel
 	public function getPanel() {
 		ob_start();
 		$view = $this->getViewData();
-		if ($view) include(__DIR__ . '/assets/Bar/routing.panel.phtml');
+		if ($view) include(__DIR__ . '/routing.panel.phtml');
 		return ob_get_clean();
 	}
 	/**
