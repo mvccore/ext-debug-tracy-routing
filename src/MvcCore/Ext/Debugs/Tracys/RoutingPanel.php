@@ -53,7 +53,7 @@ class RoutingPanel implements \Tracy\IBarPanel
 	 * Currently requested params with escaped `<` and `>`.
 	 * @var array
 	 */
-	protected $requestParams = array();
+	protected $requestParams = [];
 
 	/**
 	 * Reference to current application router instance.
@@ -65,7 +65,7 @@ class RoutingPanel implements \Tracy\IBarPanel
 	 * Reference to all initialized application routes in router.
 	 * @var \MvcCore\Route[]|\MvcCore\Interfaces\IRoute[]
 	 */
-	protected $routes = array();
+	protected $routes = [];
 
 	/**
 	 * Reference to route matched by current request.
@@ -166,11 +166,11 @@ class RoutingPanel implements \Tracy\IBarPanel
 		$this->request = & $this->app->GetRequest();
 		$this->requestLang = $this->request->GetLang();
 		$getParamsKeys = array_unique(array_merge(
-			array('controller', 'action'),
-			$this->currentRoute ? $this->currentRoute->GetReverseParams() : array(),
+			['controller', 'action'],
+			$this->currentRoute ? $this->currentRoute->GetReverseParams() : [],
 			array_keys($_GET)
 		));
-		$this->requestParams = & $this->request->GetParams(array('#[\<\>]#', ''), $getParamsKeys);
+		$this->requestParams = & $this->request->GetParams(['#[\<\>]#', ''], $getParamsKeys);
 		if (method_exists($this->router, 'GetDefaultLang'))
 			$this->defaultLang = $this->router->GetDefaultLang();
 	}
@@ -193,7 +193,7 @@ class RoutingPanel implements \Tracy\IBarPanel
 	 * @return void
 	 */
 	protected function initViewPanelTableData () {
-		$items = array();
+		$items = [];
 		$currentRouteName = $this->currentRoute ? $this->currentRoute->GetName() : NULL;
 		/** @var $route \MvcCore\Interfaces\IRoute */
 		foreach ($this->routes as & $route) {
@@ -227,8 +227,8 @@ class RoutingPanel implements \Tracy\IBarPanel
 		$row->className = htmlSpecialChars('\\'.get_class($route), ENT_QUOTES, 'UTF-8');
 		$routePattern = $this->getRouteLocalizedRecord($route, 'GetMatch');
 		$routeReverse = $this->getRouteLocalizedRecord($route, 'GetReverse');
-		$row->match = $this->completeFormatedPatternCharGroups($routePattern, array('(', ')'));
-		$row->reverse = $this->completeFormatedPatternCharGroups($routeReverse, array('<', '>'));
+		$row->match = $this->completeFormatedPatternCharGroups($routePattern, ['(', ')']);
+		$row->reverse = $this->completeFormatedPatternCharGroups($routeReverse, ['<', '>']);
 
 		// fourth column
 		$row->routeName = $route->GetName();
@@ -238,7 +238,7 @@ class RoutingPanel implements \Tracy\IBarPanel
 		$row->defaults = $this->completeParams($route, array_keys($params), TRUE);
 
 		// fifth column (only for matched route)
-		$row->params = array();
+		$row->params = [];
 		if ($matched) {
 			$paramsAndReqestParams = array_merge($params, $this->requestParams);
 			$row->params = $this->completeParams($route, array_keys($paramsAndReqestParams), FALSE);
@@ -254,8 +254,8 @@ class RoutingPanel implements \Tracy\IBarPanel
 	 * @param bool  $useDefaults If `TRUE`, render params from route defaults, if `FALSE`, render params from request params.
 	 * @return array
 	 */
-	protected function completeParams (\MvcCore\Interfaces\IRoute & $route, $paramsNames = array(), $useDefaults = TRUE) {
-		$result = array();
+	protected function completeParams (\MvcCore\Interfaces\IRoute & $route, $paramsNames = [], $useDefaults = TRUE) {
+		$result = [];
 		if ($this->defaultLang !== NULL) {
 			$result['lang'] = '<span class="tracy-dump-string">"' . $this->requestLang . '"</span><br />';
 		}
@@ -281,10 +281,10 @@ class RoutingPanel implements \Tracy\IBarPanel
 					. htmlSpecialChars($paramValue, ENT_IGNORE, 'UTF-8')
 					. '"</span><br />';
 			} else {
-				$paramValueRendered = \Tracy\Dumper::toHtml($paramValue, array(
+				$paramValueRendered = \Tracy\Dumper::toHtml($paramValue, [
 					\Tracy\Dumper::COLLAPSE => TRUE,
 					\Tracy\Dumper::LIVE => TRUE
-				));
+				]);
 			}
 			$result[$paramNameEncoded] = $paramValueRendered;
 		}
@@ -295,7 +295,7 @@ class RoutingPanel implements \Tracy\IBarPanel
 	 * Add into route regular expression pattern or reverse ($route->GetPattern()
 	 * or $route->GetReverse()) around all detected character groups special
 	 * html span elements to color them in template.
-	 * @param string   $str      route pattern string or reverse string
+	 * @param string   $str	  route pattern string or reverse string
 	 * @param string[] $brackets array with specified opening bracket and closing bracket type
 	 * @return string
 	 */
@@ -330,7 +330,7 @@ class RoutingPanel implements \Tracy\IBarPanel
 	 * @return array[]
 	 */
 	protected function completeMatchingBracketsPositions ($str, $begin, $end) {
-		$result = array();
+		$result = [];
 		preg_match_all('#([\\'.$begin.'\\'.$end.'])#', $str, $matches, PREG_OFFSET_CAPTURE);
 		if ($matches[0]) {
 			$matches = $matches[0];
@@ -361,11 +361,11 @@ class RoutingPanel implements \Tracy\IBarPanel
 					} else {
 						$level -= 1;
 						if ($level === 0) {
-							$result[] = array(
+							$result[] = [
 								mb_substr($str, $groupBegin, $itemPos - $groupBegin + 1),
 								$groupBegin,
 								$itemPos
-							);
+							];
 						}
 					}
 				}
@@ -401,7 +401,7 @@ class RoutingPanel implements \Tracy\IBarPanel
 			$fullControllerClassName = '\\App\\Controllers\\' . $ctrlName;
 			$fullClassToSearch = $fullControllerClassName;
 		}
-		$result = array('', $fullControllerClassName . ':' . $actionName . 'Action');
+		$result = ['', $fullControllerClassName . ':' . $actionName . 'Action'];
 		try {
 			$ctrlReflection = new \ReflectionClass($fullClassToSearch);
 			if ($ctrlReflection instanceof \ReflectionClass) {
@@ -409,10 +409,10 @@ class RoutingPanel implements \Tracy\IBarPanel
 				$actionReflection = $ctrlReflection->getMethod($actionName . 'Action');
 				if ($actionReflection instanceof \ReflectionMethod) {
 					$line = $actionReflection->getStartLine();
-					$result = array(
+					$result = [
 						\Tracy\Helpers::editorUri($file, $line),
 						$fullControllerClassName . ':' . $actionName . 'Action'
-					);
+					];
 				}
 			}
 		} catch (\Exception $e) {
@@ -440,11 +440,11 @@ class RoutingPanel implements \Tracy\IBarPanel
 	 */
 	protected function initViewPanelRequestedUrlData () {
 		$req = & $this->request;
-		$this->view->requestedUrl = (object) array(
+		$this->view->requestedUrl = (object) [
 			'method'	=> htmlSpecialChars($req->GetMethod(), ENT_IGNORE, 'UTF-8'),
 			'baseUrl'	=> htmlSpecialChars($req->GetBaseUrl(), ENT_IGNORE, 'UTF-8'),
 			'path'		=> htmlSpecialChars($req->GetRequestPath(), ENT_IGNORE, 'UTF-8'),
-		);
+		];
 	}
 
 	/**
@@ -453,8 +453,8 @@ class RoutingPanel implements \Tracy\IBarPanel
 	 * @return void
 	 */
 	private function _debug ($var) {
-		$this->_debugCode .= \Tracy\Dumper::toHtml($var, array(
+		$this->_debugCode .= \Tracy\Dumper::toHtml($var, [
 			\Tracy\Dumper::LIVE => TRUE
-		));
+		]);
 	}
 }
