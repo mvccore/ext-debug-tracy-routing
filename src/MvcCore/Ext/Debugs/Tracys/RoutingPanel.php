@@ -276,7 +276,9 @@ class RoutingPanel implements \Tracy\IBarPanel
 				: NULL;
 			if ($key === 0 && $paramName === 0 && $paramValue === NULL) continue; // weird bugxif
 			$paramNameEncoded = htmlSpecialChars($paramName, ENT_IGNORE, 'UTF-8');
-			if (is_string($paramValue)) {
+			if ($paramValue === NULL) {
+				$paramValueRendered = '<span class="tracy-dump-null">NULL</span><br />';
+			} else if (is_string($paramValue)) {
 				$paramValueRendered = '<span class="tracy-dump-string">"'
 					. htmlSpecialChars($paramValue, ENT_IGNORE, 'UTF-8')
 					. '"</span><br />';
