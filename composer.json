@@ -1,7 +1,7 @@
 {
 	"name": "mvccore/ext-debug-tracy-routing",
 	"type": "library",
-	"description": "MvcCore Extension - Debug Tracy Panel - Routing - render and add into tracy debug panel all configured routes in current MvcCore application router and to display currently matched route.",
+	"description": "MvcCore - Extension - Debug - Tracy - Panel Routing - render and add into tracy debug panel all configured routes in current MvcCore application router and to display currently matched route.",
 	"keywords": [
 		"mvc", 
 		"mvccore", 
