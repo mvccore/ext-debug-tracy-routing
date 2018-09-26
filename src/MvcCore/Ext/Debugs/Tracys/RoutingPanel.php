@@ -269,7 +269,7 @@ class RoutingPanel implements \Tracy\IBarPanel
 		}
 		foreach ($paramsNames as $key => $paramName) {
 			if ($paramName == 'controller' || $paramName == 'action') {
-				if (!in_array($paramName, $routeDefaultsKeys) && !isset($_GET[$paramName])) continue;
+				if (!in_array($paramName, $routeDefaultsKeys, TRUE) && !isset($_GET[$paramName])) continue;
 			}
 			$paramValue = isset($paramValues[$paramName])
 				? $paramValues[$paramName]
