@@ -27,7 +27,7 @@ class RoutingPanel implements \Tracy\IBarPanel
 
 	/**
 	 * Reference to main application instance.
-	 * @var \MvcCore\Application|\MvcCore\Interfaces\IApplication
+	 * @var \MvcCore\Application|\MvcCore\IApplication
 	 */
 	protected $app = NULL;
 
@@ -39,7 +39,7 @@ class RoutingPanel implements \Tracy\IBarPanel
 
 	/**
 	 * Reference to current application request instance.
-	 * @var \MvcCore\Request|\MvcCore\Interfaces\IRequest
+	 * @var \MvcCore\Request|\MvcCore\IRequest
 	 */
 	protected $request = NULL;
 
@@ -57,19 +57,19 @@ class RoutingPanel implements \Tracy\IBarPanel
 
 	/**
 	 * Reference to current application router instance.
-	 * @var \MvcCore\Router|\MvcCore\Interfaces\IRouter
+	 * @var \MvcCore\Router|\MvcCore\IRouter
 	 */
 	protected $router = NULL;
 
 	/**
 	 * Reference to all initialized application routes in router.
-	 * @var \MvcCore\Route[]|\MvcCore\Interfaces\IRoute[]
+	 * @var \MvcCore\Route[]|\MvcCore\IRoute[]
 	 */
 	protected $routes = [];
 
 	/**
 	 * Reference to route matched by current request.
-	 * @var \MvcCore\Route|\MvcCore\Interfaces\IRoute
+	 * @var \MvcCore\Route|\MvcCore\IRoute
 	 */
 	protected $currentRoute = NULL;
 
@@ -195,7 +195,7 @@ class RoutingPanel implements \Tracy\IBarPanel
 	protected function initViewPanelTableData () {
 		$items = [];
 		$currentRouteName = $this->currentRoute ? $this->currentRoute->GetName() : NULL;
-		/** @var $route \MvcCore\Interfaces\IRoute */
+		/** @var $route \MvcCore\IRoute */
 		foreach ($this->routes as & $route) {
 			$matched = FALSE;
 			if ($currentRouteName !== NULL && $route->GetName() === $currentRouteName) {
@@ -208,11 +208,11 @@ class RoutingPanel implements \Tracy\IBarPanel
 
 	/**
 	 * Complete single route table row view data.
-	 * @param \MvcCore\Interfaces\IRoute $route
+	 * @param \MvcCore\IRoute $route
 	 * @param bool $matched
 	 * @return \stdClass
 	 */
-	protected function initViewPanelTableRow (\MvcCore\Interfaces\IRoute & $route, $matched) {
+	protected function initViewPanelTableRow (\MvcCore\IRoute & $route, $matched) {
 		$route->InitAll();
 		$row = new \stdClass;
 
@@ -249,12 +249,12 @@ class RoutingPanel implements \Tracy\IBarPanel
 
 	/**
 	 * Complete fourth column (and fifth if matched) params collection string for template.
-	 * @param \MvcCore\Interfaces\IRoute $route
+	 * @param \MvcCore\IRoute $route
 	 * @param array $paramsNames Array with param keys to render.
 	 * @param bool  $useDefaults If `TRUE`, render params from route defaults, if `FALSE`, render params from request params.
 	 * @return array
 	 */
-	protected function completeParams (\MvcCore\Interfaces\IRoute & $route, $paramsNames = [], $useDefaults = TRUE) {
+	protected function completeParams (\MvcCore\IRoute & $route, $paramsNames = [], $useDefaults = TRUE) {
 		$result = [];
 		if ($this->defaultLang !== NULL) {
 			$result['lang'] = '<span class="tracy-dump-string">"' . $this->requestLang . '"</span><br />';
@@ -424,11 +424,11 @@ class RoutingPanel implements \Tracy\IBarPanel
 
 	/**
 	 * Get route non-localized or localized record - 'Pattern' and 'Reverse'
-	 * @param \MvcCore\Interfaces\IRoute $route
+	 * @param \MvcCore\IRoute $route
 	 * @param string $getter
 	 * @return string|array
 	 */
-	protected function getRouteLocalizedRecord (\MvcCore\Interfaces\IRoute & $route, $getter) {
+	protected function getRouteLocalizedRecord (\MvcCore\IRoute & $route, $getter) {
 		$result = $route->$getter($this->requestLang);
 		if ($result === NULL && $this->defaultLang !== NULL) {
 			$result = $route->$getter($this->defaultLang);
