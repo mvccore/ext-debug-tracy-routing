@@ -167,10 +167,10 @@ class RoutingPanel implements \Tracy\IBarPanel
 		$this->requestLang = $this->request->GetLang();
 		$getParamsKeys = array_unique(array_merge(
 			['controller', 'action'],
-			$this->currentRoute ? $this->currentRoute->GetReverseParams() : [],
+			$this->currentRoute ? $this->currentRoute->GetMatchedParams() : [],
 			array_keys($_GET)
 		));
-		$this->requestParams = & $this->request->GetParams(['#[\<\>]#', ''], $getParamsKeys);
+		$this->requestParams = & $this->request->GetParams(['#[\<\>]#', ''], array_keys($getParamsKeys));
 		if (method_exists($this->router, 'GetDefaultLang'))
 			$this->defaultLang = $this->router->GetDefaultLang();
 	}
@@ -227,6 +227,7 @@ class RoutingPanel implements \Tracy\IBarPanel
 		$row->className = htmlSpecialChars('\\'.get_class($route), ENT_QUOTES, 'UTF-8');
 		$routePattern = $this->getRouteLocalizedRecord($route, 'GetMatch');
 		$routeReverse = $this->getRouteLocalizedRecord($route, 'GetReverse');
+		$routeDefaults = $this->getRouteLocalizedRecord($route, 'GetDefaults');
 		$row->match = $this->completeFormatedPatternCharGroups($routePattern, ['(', ')']);
 		$row->reverse = $this->completeFormatedPatternCharGroups($routeReverse, ['<', '>']);
 
@@ -234,13 +235,14 @@ class RoutingPanel implements \Tracy\IBarPanel
 		$row->routeName = $route->GetName();
 		$row->ctrlActionName = $route->GetControllerAction();
 		$row->ctrlActionLink = $this->completeCtrlActionLink($route->GetController(), $route->GetAction());
-		$params = array_merge($route->GetReverseParams(), $route->GetDefaults());
-		$row->defaults = $this->completeParams($route, array_keys($params), TRUE);
+		$routeReverseParams = $route->GetReverseParams();
+		$paramsKeys = array_unique(array_merge($routeReverseParams, array_keys($routeDefaults)));
+		$row->defaults = $this->completeParams($route, array_keys($paramsKeys), TRUE);
 
 		// fifth column (only for matched route)
 		$row->params = [];
 		if ($matched) {
-			$paramsAndReqestParams = array_merge($params, $this->requestParams);
+			$paramsAndReqestParams = array_merge($routeDefaults, $this->requestParams);
 			$row->params = $this->completeParams($route, array_keys($paramsAndReqestParams), FALSE);
 		}
 
