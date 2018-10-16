@@ -166,11 +166,11 @@ class RoutingPanel implements \Tracy\IBarPanel
 		$this->request = & $this->app->GetRequest();
 		$this->requestLang = $this->request->GetLang();
 		$getParamsKeys = array_unique(array_merge(
-			['controller', 'action'],
+			['controller'=>NULL, 'action'=>NULL],
 			$this->currentRoute ? $this->currentRoute->GetMatchedParams() : [],
 			array_keys($_GET)
 		));
-		$this->requestParams = & $this->request->GetParams(['#[\<\>]#', ''], array_keys($getParamsKeys));
+		$this->requestParams = & $this->request->GetParams(['#[\<\>\'"]#' => ''], array_keys($getParamsKeys));
 		if (method_exists($this->router, 'GetDefaultLang'))
 			$this->defaultLang = $this->router->GetDefaultLang();
 	}
@@ -225,19 +225,28 @@ class RoutingPanel implements \Tracy\IBarPanel
 
 		// third column
 		$row->className = htmlSpecialChars('\\'.get_class($route), ENT_QUOTES, 'UTF-8');
-		$routePattern = $this->getRouteLocalizedRecord($route, 'GetMatch');
+		$routeMatch = $this->getRouteLocalizedRecord($route, 'GetMatch');
 		$routeReverse = $this->getRouteLocalizedRecord($route, 'GetReverse');
 		$routeDefaults = $this->getRouteLocalizedRecord($route, 'GetDefaults');
-		$row->match = $this->completeFormatedPatternCharGroups($routePattern, ['(', ')']);
-		$row->reverse = $this->completeFormatedPatternCharGroups($routeReverse, ['<', '>']);
+		$row->match = $this->completeFormatedPatternCharGroups($routeMatch, ['(', ')']);
+		if ($routeReverse !== NULL) {
+			$row->reverse = $this->completeFormatedPatternCharGroups($routeReverse, ['<', '>']);
+		} else {
+			$row->reverse = NULL;
+		}
 
 		// fourth column
 		$row->routeName = $route->GetName();
 		$row->ctrlActionName = $route->GetControllerAction();
-		$row->ctrlActionLink = $this->completeCtrlActionLink($route->GetController(), $route->GetAction());
-		$routeReverseParams = $route->GetReverseParams();
+		if ($row->ctrlActionName !== ':') {
+			$row->ctrlActionLink = $this->completeCtrlActionLink($route->GetController(), $route->GetAction());
+		} else {
+			$row->ctrlActionName = NULL;
+			$row->ctrlActionLink = NULL;
+		}
+		$routeReverseParams = $route->GetReverseParams() ?: []; // route could NULL reverse params when redirect route defined
 		$paramsKeys = array_unique(array_merge($routeReverseParams, array_keys($routeDefaults)));
-		$row->defaults = $this->completeParams($route, array_keys($paramsKeys), TRUE);
+		$row->defaults = $this->completeParams($route, $paramsKeys, TRUE);
 
 		// fifth column (only for matched route)
 		$row->params = [];
@@ -340,6 +349,7 @@ class RoutingPanel implements \Tracy\IBarPanel
 			$matches = $matches[0];
 			$level = 0;
 			$groupBegin = -1;
+			$paramLevel = 0;
 			foreach ($matches as $item) {
 				list($itemChar, $itemPos) = $item;
 				$backSlashesCnt = 0;
@@ -358,13 +368,19 @@ class RoutingPanel implements \Tracy\IBarPanel
 					($backSlashesCnt > 0 && $backSlashesCnt % 2 === 0)
 				)) {
 					if ($itemChar == $begin) {
-						if ($level === 0) {
-							$groupBegin = $itemPos;
+						if ($begin == '(') {
+							$itemCharNext = mb_substr($str, $itemPos + 1, 1);
+							if ($itemCharNext !== '?') {
+								$level += 1;
+								continue;
+							}
 						}
+						$paramLevel = $level;
+						$groupBegin = $itemPos;
 						$level += 1;
 					} else {
 						$level -= 1;
-						if ($level === 0) {
+						if ($level === $paramLevel) {
 							$result[] = [
 								mb_substr($str, $groupBegin, $itemPos - $groupBegin + 1),
 								$groupBegin,
@@ -374,13 +390,6 @@ class RoutingPanel implements \Tracy\IBarPanel
 					}
 				}
 			}
-		}
-		// remove trailing slash match group
-		$resultCount = count($result);
-		if ($resultCount > 0) {
-			$lastIndex = count($result) - 1;
-			if ($result[$lastIndex][0] == '(?=/$|$)')
-				unset($result[$lastIndex]);
 		}
 		return $result;
 	}
@@ -432,9 +441,8 @@ class RoutingPanel implements \Tracy\IBarPanel
 	 */
 	protected function getRouteLocalizedRecord (\MvcCore\IRoute & $route, $getter) {
 		$result = $route->$getter($this->requestLang);
-		if ($result === NULL && $this->defaultLang !== NULL) {
+		if ($result === NULL && $this->defaultLang !== NULL) 
 			$result = $route->$getter($this->defaultLang);
-		}
 		return $result;
 	}
 
