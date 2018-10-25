@@ -407,11 +407,15 @@ class RoutingPanel implements \Tracy\IBarPanel
 	 */
 	protected function completeCtrlActionLink ($ctrlName = '', $actionName = '') {
 		$fullControllerClassName = '';
-		if (substr($ctrlName, 0, 1) == '\\') {
+		static $controllersDir = NULL;
+		if ($controllersDir === NULL) {
+			$controllersDir = '\\' . implode('\\', [$this->app->GetAppDir(), $this->app->GetControllersDir()]) . '\\';
+		}
+		if (substr($ctrlName, 0, 2) == '//') {
 			$fullControllerClassName = $ctrlName;
-			$fullClassToSearch = substr($ctrlName, 1);
+			$fullClassToSearch = substr($ctrlName, 2);
 		} else {
-			$fullControllerClassName = '\\App\\Controllers\\' . $ctrlName;
+			$fullControllerClassName = $controllersDir . $ctrlName;
 			$fullClassToSearch = $fullControllerClassName;
 		}
 		$result = ['', $fullControllerClassName . ':' . $actionName . 'Action'];
