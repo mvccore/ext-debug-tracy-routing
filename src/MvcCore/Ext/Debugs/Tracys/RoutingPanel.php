@@ -142,7 +142,7 @@ class RoutingPanel implements \Tracy\IBarPanel
 			$this->initViewPanelTitle();
 			// complete routes table items
 			$this->initViewPanelTableData();
-			// complete requested url data under routes table
+			// complete requested URL data under routes table
 			$this->initViewPanelRequestedUrlData();
 		} catch (\Exception $e) {
 			$this->_debug($e);
@@ -399,7 +399,7 @@ class RoutingPanel implements \Tracy\IBarPanel
 	 * by PHP reflection object if controller class exist and it's possible by
 	 * loaded controller class to create reflection object to complete link properties.
 	 * Result is returned as array containing:
-	 *  0 - editor link url
+	 *  0 - editor link URL
 	 *  1 - link text
 	 * @param string $ctrlName
 	 * @param string $actionName
@@ -451,7 +451,7 @@ class RoutingPanel implements \Tracy\IBarPanel
 	}
 
 	/**
-	 * Complete data about requested url under routes table.
+	 * Complete data about requested URL under routes table.
 	 * @return void
 	 */
 	protected function initViewPanelRequestedUrlData () {
