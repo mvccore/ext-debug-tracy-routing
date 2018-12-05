@@ -74,7 +74,7 @@ class RoutingPanel implements \Tracy\IBarPanel
 	protected $currentRoute = NULL;
 
 	/**
-	 * Default language for possible multilanguage router version.
+	 * Default language for possible multi-language router version.
 	 * @var string|NULL
 	 */
 	protected $defaultLang = NULL;
@@ -124,7 +124,7 @@ class RoutingPanel implements \Tracy\IBarPanel
 	/**
 	 * Set up view data, if data are completed,
 	 * return them directly.
-	 * - complete basic \MvcCore core objects to complere other view data
+	 * - complete basic \MvcCore core objects to complete other view data
 	 * - complete panel title
 	 * - complete routes table items
 	 * - set result data into static field
@@ -134,7 +134,7 @@ class RoutingPanel implements \Tracy\IBarPanel
 		if ($this->view !== NULL) return $this->view;
 		$this->view = new \stdClass;
 		try {
-			// complete basic \MvcCore core objects to complere other view data
+			// complete basic \MvcCore core objects to complete other view data
 			$this->initMainApplicationProperties();
 			// those cases are only when request is redirected very soon
 			if ($this->router === NULL) return $this->view;
@@ -285,7 +285,7 @@ class RoutingPanel implements \Tracy\IBarPanel
 			$paramValue = isset($paramValues[$paramName])
 				? $paramValues[$paramName]
 				: NULL;
-			if ($key === 0 && $paramName === 0 && $paramValue === NULL) continue; // weird bugxif
+			if ($key === 0 && $paramName === 0 && $paramValue === NULL) continue; // weird fix
 			$paramNameEncoded = htmlSpecialChars($paramName, ENT_IGNORE, 'UTF-8');
 			if ($paramValue === NULL) {
 				$paramValueRendered = '<span class="tracy-dump-null">NULL</span><br />';
@@ -334,8 +334,8 @@ class RoutingPanel implements \Tracy\IBarPanel
 
 	/**
 	 * Complete collection with first level matching brackets,
-	 * info about substrings between them and theur opening and closing
-	 * positions to complete task with character group coloring in
+	 * info about substrings between them and their opening and closing
+	 * positions to complete task with character group colouring in
 	 * local method $this->completeFormatedPatternOrReverseCharGroups().
 	 * @param string $str	string to search brackets in
 	 * @param string $begin	opening bracket char
