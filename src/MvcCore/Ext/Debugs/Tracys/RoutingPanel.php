@@ -165,8 +165,11 @@ class RoutingPanel implements \Tracy\IBarPanel
 		$this->currentRoute = $this->router->GetCurrentRoute();
 		$this->request = & $this->app->GetRequest();
 		$this->requestLang = $this->request->GetLang();
+		$router = & $this->router;
+		$ctrlParamName = $router::URL_PARAM_CONTROLLER;
+		$actionParamName = $router::URL_PARAM_ACTION;
 		$getParamsKeys = array_unique(array_merge(
-			['controller'=>NULL, 'action'=>NULL],
+			[$ctrlParamName => NULL, $actionParamName => NULL],
 			$this->currentRoute ? $this->currentRoute->GetMatchedParams() : [],
 			array_keys($_GET)
 		));
@@ -278,8 +281,11 @@ class RoutingPanel implements \Tracy\IBarPanel
 		} else {
 			$paramValues = $this->requestParams;
 		}
+		$router = & $this->router;
+		$ctrlParamName = $router::URL_PARAM_CONTROLLER;
+		$actionParamName = $router::URL_PARAM_ACTION;
 		foreach ($paramsNames as $key => $paramName) {
-			if ($paramName == 'controller' || $paramName == 'action') {
+			if ($paramName == $ctrlParamName || $paramName == $actionParamName) {
 				if (!in_array($paramName, $routeDefaultsKeys, TRUE) && !isset($_GET[$paramName])) continue;
 			}
 			$paramValue = isset($paramValues[$paramName])
