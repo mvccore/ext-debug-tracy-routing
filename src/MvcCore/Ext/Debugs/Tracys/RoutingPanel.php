@@ -229,6 +229,7 @@ class RoutingPanel implements \Tracy\IBarPanel
 		// third column
 		$row->className = htmlSpecialChars('\\'.get_class($route), ENT_QUOTES, 'UTF-8');
 		$routeMatch = $this->getRouteLocalizedRecord($route, 'GetMatch');
+		$routeMatch = rtrim($routeMatch, 'imsxeADSUXJu'); // remove all modifiers
 		$routeReverse = $this->getRouteLocalizedRecord($route, 'GetReverse');
 		$routeDefaults = $this->getRouteLocalizedRecord($route, 'GetDefaults');
 		$row->match = $this->completeFormatedPatternCharGroups($routeMatch, ['(', ')']);
@@ -350,9 +351,33 @@ class RoutingPanel implements \Tracy\IBarPanel
 	 */
 	protected function completeMatchingBracketsPositions ($str, $begin, $end) {
 		$result = [];
-		preg_match_all('#([\\'.$begin.'\\'.$end.'])#', $str, $matches, PREG_OFFSET_CAPTURE);
-		if ($matches[0]) {
-			$matches = $matches[0];
+		$i = 0;
+		$l = mb_strlen($str);
+		$matches = [];
+		while ($i < $l) {
+			$beginPos = mb_strpos($str, $begin, $i);
+			$endPos = mb_strpos($str, $end, $i);
+			$beginContained = $beginPos !== FALSE;
+			$endContained = $endPos !== FALSE;
+			if ($beginContained && $endContained) {
+				if ($beginPos < $endPos) {
+					$matches[] = [$begin, $beginPos];
+					$i = $beginPos + 1;
+				} else {
+					$matches[] = [$end, $endPos];
+					$i = $endPos + 1;
+				}
+			} else if ($beginContained) {
+				$matches[] = [$begin, $beginPos];
+				$i = $beginPos + 1;
+			} else if ($endContained) {
+				$matches[] = [$end, $endPos];
+				$i = $endPos + 1;
+			} else {
+				break;
+			}
+		}
+		if ($matches) {
 			$level = 0;
 			$groupBegin = -1;
 			$paramLevel = 0;
@@ -386,7 +411,7 @@ class RoutingPanel implements \Tracy\IBarPanel
 						$level += 1;
 					} else {
 						$level -= 1;
-						if ($level === $paramLevel) {
+						if ($level === $paramLevel && $groupBegin > -1) {
 							$result[] = [
 								mb_substr($str, $groupBegin, $itemPos - $groupBegin + 1),
 								$groupBegin,
