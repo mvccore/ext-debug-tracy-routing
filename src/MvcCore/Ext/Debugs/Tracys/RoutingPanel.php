@@ -233,11 +233,13 @@ class RoutingPanel implements \Tracy\IBarPanel
 		$routeReverse = $this->getRouteLocalizedRecord($route, 'GetReverse');
 		$routeDefaults = $this->getRouteLocalizedRecord($route, 'GetDefaults');
 		$row->match = $this->completeFormatedPatternCharGroups($routeMatch, ['(', ')']);
+		unset($routeMatch);
 		if ($routeReverse !== NULL) {
 			$row->reverse = $this->completeFormatedPatternCharGroups($routeReverse, ['<', '>']);
 		} else {
 			$row->reverse = NULL;
 		}
+		unset($routeReverse);
 
 		// fourth column
 		$row->routeName = $route->GetName();
@@ -250,13 +252,17 @@ class RoutingPanel implements \Tracy\IBarPanel
 		}
 		$routeReverseParams = $route->GetReverseParams() ?: []; // route could NULL reverse params when redirect route defined
 		$paramsKeys = array_unique(array_merge($routeReverseParams, array_keys($routeDefaults)));
+		unset($routeReverseParams);
 		$row->defaults = $this->completeParams($route, $paramsKeys, TRUE);
+		unset($paramsKeys);
 
 		// fifth column (only for matched route)
 		$row->params = [];
 		if ($matched) {
 			$paramsAndReqestParams = array_merge($routeDefaults, $this->requestParams);
+			unset($routeDefaults);
 			$row->params = $this->completeParams($route, array_keys($paramsAndReqestParams), FALSE);
+			unset($paramsAndReqestParams, $route);
 		}
 
 		return $row;
@@ -302,8 +308,8 @@ class RoutingPanel implements \Tracy\IBarPanel
 					. '"</span><br />';
 			} else {
 				$paramValueRendered = \Tracy\Dumper::toHtml($paramValue, [
-					\Tracy\Dumper::COLLAPSE => TRUE,
-					\Tracy\Dumper::LIVE => TRUE
+					\Tracy\Dumper::COLLAPSE	=> TRUE,
+					\Tracy\Dumper::LIVE		=> TRUE
 				]);
 			}
 			$result[$paramNameEncoded] = $paramValueRendered;
@@ -385,7 +391,7 @@ class RoutingPanel implements \Tracy\IBarPanel
 				list($itemChar, $itemPos) = $item;
 				$backSlashesCnt = 0;
 				$backSlashPos = $itemPos - 1;
-				while ($backSlashPos > -1 && true) {
+				while ($backSlashPos > -1) {
 					$prevChar = mb_substr($str, $backSlashPos, 1);
 					if ($prevChar == '\\') {
 						$backSlashesCnt += 1;
@@ -422,6 +428,15 @@ class RoutingPanel implements \Tracy\IBarPanel
 				}
 			}
 		}
+		unset(
+			$str, $begin, $end,
+			$beginPos, $endPos, 
+			$beginContained, $endContained, 
+			$matches, $item, $i, $l,
+			$level, $groupBegin, $paramLevel,
+			$itemPos, $itemCharNext, $itemChar,
+			$backSlashesCnt, $backSlashPos, $prevChar
+		);
 		return $result;
 	}
 
