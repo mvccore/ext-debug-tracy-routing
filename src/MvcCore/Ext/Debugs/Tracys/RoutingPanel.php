@@ -501,7 +501,8 @@ class RoutingPanel implements \Tracy\IBarPanel
 	 */
 	private function _debug ($var) {
 		$this->_debugCode .= \Tracy\Dumper::toHtml($var, [
-			\Tracy\Dumper::LIVE => TRUE
+			\Tracy\Dumper::LIVE		=> TRUE,
+			//\Tracy\Dumper::DEPTH	=> 5,
 		]);
 	}
 }
