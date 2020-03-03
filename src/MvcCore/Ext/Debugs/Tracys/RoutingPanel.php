@@ -159,13 +159,13 @@ class RoutingPanel implements \Tracy\IBarPanel
 	 * @return void
 	 */
 	protected function initMainApplicationProperties () {
-		$this->app = & \MvcCore\Application::GetInstance();
-		$this->router = & $this->app->GetRouter();
-		$this->routes = & $this->router->GetRoutes();
+		$this->app = \MvcCore\Application::GetInstance();
+		$this->router = $this->app->GetRouter();
+		$this->routes = $this->router->GetRoutes();
 		$this->currentRoute = $this->router->GetCurrentRoute();
-		$this->request = & $this->app->GetRequest();
+		$this->request = $this->app->GetRequest();
 		$this->requestLang = $this->request->GetLang();
-		$router = & $this->router;
+		$router = $this->router;
 		$ctrlParamName = $router::URL_PARAM_CONTROLLER;
 		$actionParamName = $router::URL_PARAM_ACTION;
 		$getParamsKeys = array_unique(array_merge(
@@ -430,8 +430,8 @@ class RoutingPanel implements \Tracy\IBarPanel
 		}
 		unset(
 			$str, $begin, $end,
-			$beginPos, $endPos, 
-			$beginContained, $endContained, 
+			$beginPos, $endPos,
+			$beginContained, $endContained,
 			$matches, $item, $i, $l,
 			$level, $groupBegin, $paramLevel,
 			$itemPos, $itemCharNext, $itemChar,
@@ -491,7 +491,7 @@ class RoutingPanel implements \Tracy\IBarPanel
 	 */
 	protected function getRouteLocalizedRecord (\MvcCore\IRoute & $route, $getter) {
 		$result = $route->$getter($this->requestLang);
-		if ($result === NULL && $this->defaultLang !== NULL) 
+		if ($result === NULL && $this->defaultLang !== NULL)
 			$result = $route->$getter($this->defaultLang);
 		return $result;
 	}
