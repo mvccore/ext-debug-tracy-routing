@@ -199,7 +199,7 @@ class RoutingPanel implements \Tracy\IBarPanel
 		$items = [];
 		$currentRouteName = $this->currentRoute ? $this->currentRoute->GetName() : NULL;
 		/** @var $route \MvcCore\IRoute */
-		foreach ($this->routes as & $route) {
+		foreach ($this->routes as $route) {
 			$matched = FALSE;
 			if ($currentRouteName !== NULL && $route->GetName() === $currentRouteName) {
 				$matched = TRUE;
@@ -215,7 +215,7 @@ class RoutingPanel implements \Tracy\IBarPanel
 	 * @param bool $matched
 	 * @return \stdClass
 	 */
-	protected function initViewPanelTableRow (\MvcCore\IRoute & $route, $matched) {
+	protected function initViewPanelTableRow (\MvcCore\IRoute $route, $matched) {
 		$route->InitAll();
 		$row = new \stdClass;
 
@@ -275,7 +275,7 @@ class RoutingPanel implements \Tracy\IBarPanel
 	 * @param bool  $useDefaults If `TRUE`, render params from route defaults, if `FALSE`, render params from request params.
 	 * @return array
 	 */
-	protected function completeParams (\MvcCore\IRoute & $route, $paramsNames = [], $useDefaults = TRUE) {
+	protected function completeParams (\MvcCore\IRoute $route, $paramsNames = [], $useDefaults = TRUE) {
 		$result = [];
 		if ($this->defaultLang !== NULL) {
 			$result['lang'] = '<span class="tracy-dump-string">"' . $this->requestLang . '"</span><br />';
@@ -288,7 +288,7 @@ class RoutingPanel implements \Tracy\IBarPanel
 		} else {
 			$paramValues = $this->requestParams;
 		}
-		$router = & $this->router;
+		$router = $this->router;
 		$ctrlParamName = $router::URL_PARAM_CONTROLLER;
 		$actionParamName = $router::URL_PARAM_ACTION;
 		foreach ($paramsNames as $key => $paramName) {
@@ -330,7 +330,7 @@ class RoutingPanel implements \Tracy\IBarPanel
 		if ($matches) {
 			$pos = 0;
 			$result = '';
-			foreach ($matches as $key => & $match) {
+			foreach ($matches as $key => $match) {
 				list($subStr, $begin, $end) = $match;
 				$result .= mb_substr($str, $pos, $begin - $pos);
 				$result .= '<span class="c'.($key % 6).'">';
@@ -489,7 +489,7 @@ class RoutingPanel implements \Tracy\IBarPanel
 	 * @param string $getter
 	 * @return string|array
 	 */
-	protected function getRouteLocalizedRecord (\MvcCore\IRoute & $route, $getter) {
+	protected function getRouteLocalizedRecord (\MvcCore\IRoute $route, $getter) {
 		$result = $route->$getter($this->requestLang);
 		if ($result === NULL && $this->defaultLang !== NULL)
 			$result = $route->$getter($this->defaultLang);
@@ -501,7 +501,7 @@ class RoutingPanel implements \Tracy\IBarPanel
 	 * @return void
 	 */
 	protected function initViewPanelRequestedUrlData () {
-		$req = & $this->request;
+		$req = $this->request;
 		$this->view->requestedUrl = (object) [
 			'method'	=> htmlSpecialChars($req->GetMethod(), ENT_IGNORE, 'UTF-8'),
 			'baseUrl'	=> htmlSpecialChars($req->GetBaseUrl(), ENT_IGNORE, 'UTF-8'),
