@@ -7,8 +7,8 @@
  * For the full copyright and license information, please view
  * the LICENSE.md file that are distributed with this source code.
  *
- * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
- * @license		https://mvccore.github.io/docs/mvccore/4.0.0/LICENCE.md
+ * @copyright	Copyright (c) 2016 Tom Flidr (https://github.com/mvccore)
+ * @license		https://mvccore.github.io/docs/mvccore/5.0.0/LICENCE.md
  */
 
 namespace MvcCore\Ext\Debugs\Tracys;
@@ -16,18 +16,18 @@ namespace MvcCore\Ext\Debugs\Tracys;
 /**
  * Responsibility - render used routes by application router and mark and render matched route with request params.
  */
-class RoutingPanel implements \Tracy\IBarPanel
-{
+class RoutingPanel implements \Tracy\IBarPanel {
+
 	/**
-	 * MvcCore Extension - Debug - Tracy Panel - Routing - version:
+	 * MvcCore Extension - Debug - Tracy - Routing - version:
 	 * Comparison by PHP function version_compare();
 	 * @see http://php.net/manual/en/function.version-compare.php
 	 */
-	const VERSION = '5.0.0-alpha';
+	const VERSION = '5.0.0';
 
 	/**
 	 * Reference to main application instance.
-	 * @var \MvcCore\Application|\MvcCore\IApplication
+	 * @var \MvcCore\Application
 	 */
 	protected $app = NULL;
 
@@ -39,7 +39,7 @@ class RoutingPanel implements \Tracy\IBarPanel
 
 	/**
 	 * Reference to current application request instance.
-	 * @var \MvcCore\Request|\MvcCore\IRequest
+	 * @var \MvcCore\Request
 	 */
 	protected $request = NULL;
 
@@ -57,19 +57,19 @@ class RoutingPanel implements \Tracy\IBarPanel
 
 	/**
 	 * Reference to current application router instance.
-	 * @var \MvcCore\Router|\MvcCore\IRouter
+	 * @var \MvcCore\Router
 	 */
 	protected $router = NULL;
 
 	/**
 	 * Reference to all initialized application routes in router.
-	 * @var \MvcCore\Route[]|\MvcCore\IRoute[]
+	 * @var \MvcCore\Route[]
 	 */
 	protected $routes = [];
 
 	/**
 	 * Reference to route matched by current request.
-	 * @var \MvcCore\Route|\MvcCore\IRoute
+	 * @var \MvcCore\Route
 	 */
 	protected $currentRoute = NULL;
 
@@ -198,7 +198,7 @@ class RoutingPanel implements \Tracy\IBarPanel
 	protected function initViewPanelTableData () {
 		$items = [];
 		$currentRouteName = $this->currentRoute ? $this->currentRoute->GetName() : NULL;
-		/** @var $route \MvcCore\IRoute */
+		/** @var $route \MvcCore\Route */
 		foreach ($this->routes as $route) {
 			$matched = FALSE;
 			if ($currentRouteName !== NULL && $route->GetName() === $currentRouteName) {
@@ -211,7 +211,7 @@ class RoutingPanel implements \Tracy\IBarPanel
 
 	/**
 	 * Complete single route table row view data.
-	 * @param \MvcCore\IRoute $route
+	 * @param \MvcCore\Route $route
 	 * @param bool $matched
 	 * @return \stdClass
 	 */
@@ -270,7 +270,7 @@ class RoutingPanel implements \Tracy\IBarPanel
 
 	/**
 	 * Complete fourth column (and fifth if matched) params collection string for template.
-	 * @param \MvcCore\IRoute $route
+	 * @param \MvcCore\Route $route
 	 * @param array $paramsNames Array with param keys to render.
 	 * @param bool  $useDefaults If `TRUE`, render params from route defaults, if `FALSE`, render params from request params.
 	 * @return array
@@ -485,7 +485,7 @@ class RoutingPanel implements \Tracy\IBarPanel
 
 	/**
 	 * Get route non-localized or localized record - 'Pattern' and 'Reverse'
-	 * @param \MvcCore\IRoute $route
+	 * @param \MvcCore\Route $route
 	 * @param string $getter
 	 * @return string|array
 	 */
