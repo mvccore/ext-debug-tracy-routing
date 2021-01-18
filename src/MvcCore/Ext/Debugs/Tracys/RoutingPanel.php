@@ -144,7 +144,10 @@ class RoutingPanel implements \Tracy\IBarPanel {
 			$this->initViewPanelTableData();
 			// complete requested URL data under routes table
 			$this->initViewPanelRequestedUrlData();
-		} catch (\Exception $e) {
+		} catch (\Exception $e) { // backward compatibility
+			$this->_debug($e);
+			$this->_debug($e->getTrace());
+		} catch (\Throwable $e) {
 			$this->_debug($e);
 			$this->_debug($e->getTrace());
 		}
@@ -478,7 +481,8 @@ class RoutingPanel implements \Tracy\IBarPanel {
 					];
 				}
 			}
-		} catch (\Exception $e) {
+		} catch (\Exception $e) { // backward compatibility
+		} catch (\Throwable $e) {
 		}
 		return $result;
 	}
