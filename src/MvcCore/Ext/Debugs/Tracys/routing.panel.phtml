@@ -69,7 +69,7 @@
 							</td>
 							<?php if ($item->matched): ?>
 								<td>
-									<?php if ($item->ctrlActionLink[0]): ?>
+									<?php if (is_array($item->ctrlActionLink) && $item->ctrlActionLink[0]): ?>
 										<a class="mvc-link" title="<?php
 											echo $item->ctrlActionLink[1];
 										?>" href="<?php echo $item->ctrlActionLink[0]; ?>">
