@@ -232,7 +232,6 @@ class RoutingPanel implements \Tracy\IBarPanel {
 		// third column
 		$row->className = htmlSpecialChars('\\'.get_class($route), ENT_QUOTES, 'UTF-8');
 		$routeMatch = $this->getRouteLocalizedRecord($route, 'GetMatch');
-		$routeMatch = rtrim($routeMatch, 'imsxeADSUXJu'); // remove all modifiers
 		$routeReverse = $this->getRouteLocalizedRecord($route, 'GetReverse');
 		$routeDefaults = $this->getRouteLocalizedRecord($route, 'GetDefaults');
 		$row->match = $this->completeFormatedPatternCharGroups($routeMatch, ['(', ')']);
