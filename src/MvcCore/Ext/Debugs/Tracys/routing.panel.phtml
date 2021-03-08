@@ -1,6 +1,6 @@
 <style class="tracy-debug">
-	#tracy-debug .tracy-mode-float .tracy-inner,
-	#tracy-routing-panel .tracy-inner{overflow-x:visible;overflow-y:auto;}
+	#tracy-routing-panel{overflow:hidden;}
+	.tracy-mode-float #tracy-routing-panel{overflow:visible;}
 	#tracy-routing-panel table.routes-configuration tr.matched-by-route td{background:#BDE678 !important;}
 	#tracy-routing-panel table.routes-configuration tr.matched-by-default td{background:#C1D3FF !important;}
 	#tracy-routing-panel table.routes-configuration tr td{font:12px/1.5em Consolas, monospace !important;white-space:nowrap;}
@@ -19,85 +19,83 @@
 </style>
 <div id="tracy-routing-panel">
 	<h1><?php echo $view->panelTitle; ?></h1>
-	<div class="tracy-inner">
-		<?php if (empty($view->items)): ?>
-			<p>No routes defined.</p>
-		<?php else: ?>
-			<table class="routes-configuration">
-				<thead>
-					<tr>
-						<th></th>
-						<th>HTTP<br />Method</th>
-						<th>Match<br />&nbsp;&nbsp;&nbsp;Reverse</th>
-						<th>Route Name<br />&nbsp;&nbsp;&nbsp;Defaults</th>
-						<th>Matched Controller:Action<br />&nbsp;&nbsp;&nbsp;Matched GET Params</th>
-					</tr>
-				</thead>
-				<tbody>
-					<?php foreach ($view->items as & $item): ?>
-						<tr class="<?php
-							echo ($item->matched == 1) ? 'matched-by-route' : (($item->matched == 2) ? 'matched-by-default' : '');
-						?>">
+	<?php if (empty($view->items)): ?>
+		<p>No routes defined.</p>
+	<?php else: ?>
+		<table class="routes-configuration">
+			<thead>
+				<tr>
+					<th></th>
+					<th>HTTP<br />Method</th>
+					<th>Match<br />&nbsp;&nbsp;&nbsp;Reverse</th>
+					<th>Route Name<br />&nbsp;&nbsp;&nbsp;Defaults</th>
+					<th>Matched Controller:Action<br />&nbsp;&nbsp;&nbsp;Matched GET Params</th>
+				</tr>
+			</thead>
+			<tbody>
+				<?php foreach ($view->items as & $item): ?>
+					<tr class="<?php
+						echo ($item->matched == 1) ? 'matched-by-route' : (($item->matched == 2) ? 'matched-by-default' : '');
+					?>">
+						<td>
+							<?php echo ($item->matched == 1) ? '✓' : (($item->matched == 2) ? '≈' : ''); ?>
+						</td>
+						<td><?php echo $item->method; ?></td>
+						<td title="<?php echo $item->className; ?>">
+							<span class="pattern"><?php
+								echo $item->match;
+							?></span><br />&nbsp;&nbsp;<span class="reverse"><?php
+								echo $item->reverse;
+							?></span>
+						</td>
+						<td>
+							<?php if (isset($item->ctrlActionLink) && $item->ctrlActionLink[0]): ?>
+								<a class="mvc-link" title="<?php
+									echo $item->ctrlActionLink[1];
+								?>" href="<?php echo $item->ctrlActionLink[0]; ?>"><b><?php
+									echo $item->routeName;
+								?></b></a>
+							<?php else: ?>
+								<b class="mvc-link" title="Unable to locate Controller/Action"><?php
+									echo $item->routeName;
+								?></b>
+							<?php endif; ?>
+							<span class="params">
+								<?php foreach ($item->defaults as $key => $value): ?>
+									<?php echo $key; ?>&nbsp;=&nbsp;<?php echo $value; ?>
+								<?php endforeach; ?>
+							</span>
+						</td>
+						<?php if ($item->matched): ?>
 							<td>
-								<?php echo ($item->matched == 1) ? '✓' : (($item->matched == 2) ? '≈' : ''); ?>
-							</td>
-							<td><?php echo $item->method; ?></td>
-							<td title="<?php echo $item->className; ?>">
-								<span class="pattern"><?php
-									echo $item->match;
-								?></span><br />&nbsp;&nbsp;<span class="reverse"><?php
-									echo $item->reverse;
-								?></span>
-							</td>
-							<td>
-								<?php if (isset($item->ctrlActionLink) && $item->ctrlActionLink[0]): ?>
+								<?php if (is_array($item->ctrlActionLink) && $item->ctrlActionLink[0]): ?>
 									<a class="mvc-link" title="<?php
 										echo $item->ctrlActionLink[1];
-									?>" href="<?php echo $item->ctrlActionLink[0]; ?>"><b><?php
-										echo $item->routeName;
-									?></b></a>
+									?>" href="<?php echo $item->ctrlActionLink[0]; ?>">
+										<b><?php echo $item->ctrlActionName; ?></b>
+									</a>
 								<?php else: ?>
-									<b class="mvc-link" title="Unable to locate Controller/Action"><?php
-										echo $item->routeName;
-									?></b>
+									<b class="mvc-link" title="Unable to locate Controller/Action"><?php echo $item->ctrlActionName; ?></b>
 								<?php endif; ?>
 								<span class="params">
-									<?php foreach ($item->defaults as $key => $value): ?>
+									<?php foreach ($item->params as $key => $value): ?>
 										<?php echo $key; ?>&nbsp;=&nbsp;<?php echo $value; ?>
 									<?php endforeach; ?>
 								</span>
 							</td>
-							<?php if ($item->matched): ?>
-								<td>
-									<?php if (is_array($item->ctrlActionLink) && $item->ctrlActionLink[0]): ?>
-										<a class="mvc-link" title="<?php
-											echo $item->ctrlActionLink[1];
-										?>" href="<?php echo $item->ctrlActionLink[0]; ?>">
-											<b><?php echo $item->ctrlActionName; ?></b>
-										</a>
-									<?php else: ?>
-										<b class="mvc-link" title="Unable to locate Controller/Action"><?php echo $item->ctrlActionName; ?></b>
-									<?php endif; ?>
-									<span class="params">
-										<?php foreach ($item->params as $key => $value): ?>
-											<?php echo $key; ?>&nbsp;=&nbsp;<?php echo $value; ?>
-										<?php endforeach; ?>
-									</span>
-								</td>
-							<?php else: ?>
-								<td></td>
-							<?php endif; ?>
-						</tr>
-					<?php endforeach; ?>
-				</tbody>
-			</table>
-		<?php endif ?>
-		<?php if (!empty($view->requestedUrl)): ?>
-			<p class="requested-url">
-				<?php echo $view->requestedUrl->method; ?>
-				<?php echo $view->requestedUrl->baseUrl; ?><span><?php echo $view->requestedUrl->path; ?></span>
-			</p>
-		<?php endif ?>
-		<?php echo $this->_debugCode; ?>
-	</div>
+						<?php else: ?>
+							<td></td>
+						<?php endif; ?>
+					</tr>
+				<?php endforeach; ?>
+			</tbody>
+		</table>
+	<?php endif ?>
+	<?php if (!empty($view->requestedUrl)): ?>
+		<p class="requested-url">
+			<?php echo $view->requestedUrl->method; ?>
+			<?php echo $view->requestedUrl->baseUrl; ?><span><?php echo $view->requestedUrl->path; ?></span>
+		</p>
+	<?php endif ?>
+	<?php echo $this->_debugCode; ?>
 </div>
