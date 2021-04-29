@@ -201,7 +201,7 @@ class RoutingPanel implements \Tracy\IBarPanel {
 	protected function initViewPanelTableData () {
 		$items = [];
 		$currentRouteName = $this->currentRoute ? $this->currentRoute->GetName() : NULL;
-		/** @var $route \MvcCore\Route */
+		/** @var \MvcCore\Route $route */
 		foreach ($this->routes as $route) {
 			$matched = FALSE;
 			if ($currentRouteName !== NULL && $route->GetName() === $currentRouteName) {
