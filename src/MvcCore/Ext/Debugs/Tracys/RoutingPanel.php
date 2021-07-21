@@ -14,7 +14,8 @@
 namespace MvcCore\Ext\Debugs\Tracys;
 
 /**
- * Responsibility - render used routes by application router and mark and render matched route with request params.
+ * Responsibility - render used routes by application router and mark
+ *                  and render matched route with request params.
  */
 class RoutingPanel implements \Tracy\IBarPanel {
 
@@ -214,8 +215,8 @@ class RoutingPanel implements \Tracy\IBarPanel {
 
 	/**
 	 * Complete single route table row view data.
-	 * @param \MvcCore\Route $route
-	 * @param bool $matched
+	 * @param  \MvcCore\Route $route
+	 * @param  bool           $matched
 	 * @return \stdClass
 	 */
 	protected function initViewPanelTableRow (\MvcCore\IRoute $route, $matched) {
@@ -272,9 +273,9 @@ class RoutingPanel implements \Tracy\IBarPanel {
 
 	/**
 	 * Complete fourth column (and fifth if matched) params collection string for template.
-	 * @param \MvcCore\Route $route
-	 * @param array $paramsNames Array with param keys to render.
-	 * @param bool  $useDefaults If `TRUE`, render params from route defaults, if `FALSE`, render params from request params.
+	 * @param  \MvcCore\Route $route
+	 * @param  array          $paramsNames Array with param keys to render.
+	 * @param  bool           $useDefaults If `TRUE`, render params from route defaults, if `FALSE`, render params from request params.
 	 * @return array
 	 */
 	protected function completeParams (\MvcCore\IRoute $route, $paramsNames = [], $useDefaults = TRUE) {
@@ -323,8 +324,8 @@ class RoutingPanel implements \Tracy\IBarPanel {
 	 * Add into route regular expression pattern or reverse ($route->GetPattern()
 	 * or $route->GetReverse()) around all detected character groups special
 	 * html span elements to color them in template.
-	 * @param string   $str	  route pattern string or reverse string
-	 * @param string[] $brackets array with specified opening bracket and closing bracket type
+	 * @param  string    $str      route pattern string or reverse string
+	 * @param  \string[] $brackets array with specified opening bracket and closing bracket type
 	 * @return string
 	 */
 	protected function completeFormatedPatternCharGroups ($str, $brackets) {
@@ -352,9 +353,9 @@ class RoutingPanel implements \Tracy\IBarPanel {
 	 * info about substrings between them and their opening and closing
 	 * positions to complete task with character group colouring in
 	 * local method $this->completeFormatedPatternOrReverseCharGroups().
-	 * @param string $str	string to search brackets in
-	 * @param string $begin	opening bracket char
-	 * @param string $end	closing bracket char
+	 * @param  string $str   string to search brackets in
+	 * @param  string $begin opening bracket char
+	 * @param  string $end   closing bracket char
 	 * @return array[]
 	 */
 	protected function completeMatchingBracketsPositions ($str, $begin, $end) {
@@ -449,8 +450,8 @@ class RoutingPanel implements \Tracy\IBarPanel {
 	 * Result is returned as array containing:
 	 *  0 - editor link URL
 	 *  1 - link text
-	 * @param string $ctrlName
-	 * @param string $actionName
+	 * @param  string $ctrlName
+	 * @param  string $actionName
 	 * @return array
 	 */
 	protected function completeCtrlActionLink ($ctrlName = '', $actionName = '') {
@@ -488,8 +489,8 @@ class RoutingPanel implements \Tracy\IBarPanel {
 
 	/**
 	 * Get route non-localized or localized record - 'Pattern' and 'Reverse'
-	 * @param \MvcCore\Route $route
-	 * @param string $getter
+	 * @param  \MvcCore\Route $route
+	 * @param  string         $getter
 	 * @return string|array
 	 */
 	protected function getRouteLocalizedRecord (\MvcCore\IRoute $route, $getter) {
@@ -514,7 +515,7 @@ class RoutingPanel implements \Tracy\IBarPanel {
 
 	/**
 	 * Print any variable in panel body under routes table.
-	 * @param mixed $var
+	 * @param  mixed $var
 	 * @return void
 	 */
 	private function _debug ($var) {
