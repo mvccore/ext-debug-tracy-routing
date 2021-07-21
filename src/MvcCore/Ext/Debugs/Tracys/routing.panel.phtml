@@ -1,6 +1,7 @@
 <style class="tracy-debug">
 	#tracy-routing-panel{overflow:hidden;}
 	.tracy-mode-float #tracy-routing-panel{overflow:visible;}
+	#tracy-routing-panel h1{word-wrap:normal;}
 	#tracy-routing-panel table.routes-configuration tr.matched-by-route td{background:#BDE678 !important;}
 	#tracy-routing-panel table.routes-configuration tr.matched-by-default td{background:#C1D3FF !important;}
 	#tracy-routing-panel table.routes-configuration tr td{font:12px/1.5em Consolas, monospace !important;white-space:nowrap;}
@@ -19,6 +20,12 @@
 </style>
 <div id="tracy-routing-panel">
 	<h1><?php echo $view->panelTitle; ?></h1>
+	<?php if (!empty($view->requestedUrl)): ?>
+		<p class="requested-url">
+			<?php echo $view->requestedUrl->method; ?>
+			<?php echo $view->requestedUrl->baseUrl; ?><span><?php echo $view->requestedUrl->path; ?></span>
+		</p>
+	<?php endif ?>
 	<?php if (empty($view->items)): ?>
 		<p>No routes defined.</p>
 	<?php else: ?>
@@ -90,12 +97,6 @@
 				<?php endforeach; ?>
 			</tbody>
 		</table>
-	<?php endif ?>
-	<?php if (!empty($view->requestedUrl)): ?>
-		<p class="requested-url">
-			<?php echo $view->requestedUrl->method; ?>
-			<?php echo $view->requestedUrl->baseUrl; ?><span><?php echo $view->requestedUrl->path; ?></span>
-		</p>
 	<?php endif ?>
 	<?php echo $this->_debugCode; ?>
 </div>
