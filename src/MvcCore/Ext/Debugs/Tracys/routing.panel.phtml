@@ -1,4 +1,7 @@
-<style class="tracy-debug">
+<?php
+	$nonce = \Tracy\Helpers::getNonce();
+	$nonceAttr = $nonce ? ' nonce="' . \Tracy\Helpers::escapeHtml($nonce) . '"' : '';
+?><style type="text/css"<?php echo $nonceAttr; ?>>
 	#tracy-routing-panel{overflow:hidden;}
 	.tracy-mode-float #tracy-routing-panel,
 	.tracy-mode-window #tracy-routing-panel{overflow:visible;}
