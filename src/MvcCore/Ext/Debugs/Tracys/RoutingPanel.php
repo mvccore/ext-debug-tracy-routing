@@ -24,7 +24,7 @@ class RoutingPanel implements \Tracy\IBarPanel {
 	 * Comparison by PHP function version_compare();
 	 * @see http://php.net/manual/en/function.version-compare.php
 	 */
-	const VERSION = '5.0.6';
+	const VERSION = '5.0.7';
 
 	/**
 	 * Reference to main application instance.
@@ -235,7 +235,7 @@ class RoutingPanel implements \Tracy\IBarPanel {
 		$routeMatch = $this->getRouteLocalizedRecord($route, 'GetMatch');
 		$routeReverse = $this->getRouteLocalizedRecord($route, 'GetReverse');
 		$routeDefaults = $this->getRouteLocalizedRecord($route, 'GetDefaults');
-		if ($routeReverse !== NULL) {
+		if ($routeMatch !== NULL) {
 			$row->match = $this->completeFormatedPatternCharGroups($routeMatch, ['(', ')']);
 		} else {
 			$row->match = NULL;
