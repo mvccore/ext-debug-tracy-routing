@@ -1,28 +1,10 @@
 <?php
 	$nonce = \Tracy\Helpers::getNonce();
 	$nonceAttr = $nonce ? ' nonce="' . \Tracy\Helpers::escapeHtml($nonce) . '"' : '';
-?><style type="text/css"<?php echo $nonceAttr; ?>>
-	#tracy-routing-panel{overflow:hidden;}
-	.tracy-mode-float #tracy-routing-panel,
-	.tracy-mode-window #tracy-routing-panel{overflow:visible;}
-	#tracy-routing-panel h1{word-wrap:normal;}
-	#tracy-routing-panel table.routes-configuration tr.matched-by-route td{background:#BDE678 !important;}
-	#tracy-routing-panel table.routes-configuration tr.matched-by-default td{background:#C1D3FF !important;}
-	#tracy-routing-panel table.routes-configuration tr td{font:12px/1.5em Consolas, monospace !important;white-space:nowrap;}
-	#tracy-routing-panel table.routes-configuration tr td .c0{background:#97e5ff;}
-	#tracy-routing-panel table.routes-configuration tr td .c1{background:#8dff8d;}
-	#tracy-routing-panel table.routes-configuration tr td .c2{background:#f98fff;}
-	#tracy-routing-panel table.routes-configuration tr td .c3{background:#ff9a9a;}
-	#tracy-routing-panel table.routes-configuration tr td .c4{background:#ffb836;}
-	#tracy-routing-panel table.routes-configuration tr td .c5{background:#ffff00;}
-	#tracy-routing-panel table.routes-configuration tr td .light{color:#aaa;}
-	#tracy-routing-panel table.routes-configuration tr td .mvc-link{display:inline-block;}
-	#tracy-routing-panel table.routes-configuration tr td .params{display:block;margin-left:10px;}
-	#tracy-routing-panel table.routes-configuration tr td pre{display:inline;background:transparent !important;font:12px/1.5em !important;}
-	#tracy-routing-panel p.requested-url{white-space:nowrap;font:12px/1.5em Consolas, monospace !important;}
-	#tracy-routing-panel p.requested-url span{background:#ddd;white-space:nowrap;display:inline-block;padding:0 3px;}
-</style>
-<div id="tracy-routing-panel">
+?><style type="text/css"<?php echo $nonceAttr; ?>><?php
+	include_once(__DIR__ . '/routing.panel.css');
+?></style>
+<div class="tracy-panel-routing">
 	<h1><?php echo $view->panelTitle; ?></h1>
 	<?php if (!empty($view->requestedUrl)): ?>
 		<p class="requested-url">
