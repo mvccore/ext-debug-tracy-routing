@@ -177,8 +177,11 @@ class RoutingPanel implements \Tracy\IBarPanel {
 			array_keys($_GET)
 		));
 		$this->requestParams = & $this->request->GetParams(['#[\<\>\'"]#' => ''], array_keys($getParamsKeys));
-		if (method_exists($this->router, 'GetDefaultLang'))
-			$this->defaultLang = $this->router->GetDefaultLang();
+		if (method_exists($this->router, 'GetDefaultLocalization')) {
+			/** @var \MvcCore\Ext\Routers\ILocalization $localizedRouter */
+			$localizedRouter = $this->router;
+			list($this->defaultLang) = $localizedRouter->GetDefaultLocalization();
+		}
 	}
 
 	/**
