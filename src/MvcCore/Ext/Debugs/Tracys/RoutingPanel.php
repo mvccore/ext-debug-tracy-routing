@@ -137,12 +137,12 @@ class RoutingPanel implements \Tracy\IBarPanel {
 		if ($this->view !== NULL) return $this->view;
 		$this->view = new \stdClass;
 		try {
+			// complete panel title
+			$this->initViewPanelTitle();
 			// complete basic \MvcCore core objects to complete other view data
 			$this->initMainApplicationProperties();
 			// those cases are only when request is redirected very soon
 			if ($this->router === NULL) return $this->view;
-			// complete panel title
-			$this->initViewPanelTitle();
 			// complete routes table items
 			$this->initViewPanelTableData();
 			// complete requested URL data under routes table
@@ -180,7 +180,9 @@ class RoutingPanel implements \Tracy\IBarPanel {
 		if (method_exists($this->router, 'GetDefaultLocalization')) {
 			/** @var \MvcCore\Ext\Routers\ILocalization $localizedRouter */
 			$localizedRouter = $this->router;
-			list($this->defaultLang) = $localizedRouter->GetDefaultLocalization();
+			$routerLocalization = $localizedRouter->GetDefaultLocalization();
+			if (is_array($routerLocalization) && count($routerLocalization) > 0)
+				list($this->defaultLang) = $routerLocalization;
 		}
 	}
 
