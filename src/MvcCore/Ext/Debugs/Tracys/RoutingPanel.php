@@ -24,7 +24,7 @@ class RoutingPanel implements \Tracy\IBarPanel {
 	 * Comparison by PHP function version_compare();
 	 * @see http://php.net/manual/en/function.version-compare.php
 	 */
-	const VERSION = '5.0.11';
+	const VERSION = '5.0.12';
 	
 
 	/**
@@ -137,10 +137,10 @@ class RoutingPanel implements \Tracy\IBarPanel {
 		if ($this->view !== NULL) return $this->view;
 		$this->view = new \stdClass;
 		try {
-			// complete panel title
-			$this->initViewPanelTitle();
 			// complete basic \MvcCore core objects to complete other view data
 			$this->initMainApplicationProperties();
+			// complete panel title
+			$this->initViewPanelTitle();
 			// those cases are only when request is redirected very soon
 			if ($this->router === NULL) return $this->view;
 			// complete routes table items
