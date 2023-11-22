@@ -24,7 +24,7 @@ class RoutingPanel implements \Tracy\IBarPanel {
 	 * Comparison by PHP function version_compare();
 	 * @see http://php.net/manual/en/function.version-compare.php
 	 */
-	const VERSION = '5.0.12';
+	const VERSION = '5.0.13';
 	
 
 	/**
@@ -483,6 +483,7 @@ class RoutingPanel implements \Tracy\IBarPanel {
 				$actionReflection = $ctrlReflection->getMethod($actionName . 'Action');
 				if ($actionReflection instanceof \ReflectionMethod) {
 					$line = $actionReflection->getStartLine();
+					$file = $actionReflection->getFileName(); // methoud soub be in some sub-trait
 					$result = [
 						\Tracy\Helpers::editorUri($file, $line),
 						$fullControllerClassName . ':' . $actionName . 'Action'
