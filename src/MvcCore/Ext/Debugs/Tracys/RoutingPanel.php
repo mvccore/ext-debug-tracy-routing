@@ -477,17 +477,22 @@ class RoutingPanel implements \Tracy\IBarPanel {
 		}
 		$result = ['', $fullControllerClassName . ':' . $actionName . 'Action'];
 		try {
-			$ctrlReflection = new \ReflectionClass($fullClassToSearch);
-			if ($ctrlReflection instanceof \ReflectionClass) {
-				$file = $ctrlReflection->getFileName();
-				$actionReflection = $ctrlReflection->getMethod($actionName . 'Action');
-				if ($actionReflection instanceof \ReflectionMethod) {
-					$line = $actionReflection->getStartLine();
-					$file = $actionReflection->getFileName(); // methoud soub be in some sub-trait
-					$result = [
-						\Tracy\Helpers::editorUri($file, $line),
-						$fullControllerClassName . ':' . $actionName . 'Action'
-					];
+			if (class_exists($fullClassToSearch)) {
+				$ctrlReflection = new \ReflectionClass($fullClassToSearch);
+				if ($ctrlReflection instanceof \ReflectionClass) {
+					$file = $ctrlReflection->getFileName();
+					$ctrlActionMethodName = $actionName . 'Action';
+					if ($ctrlReflection->hasMethod($ctrlActionMethodName)) {
+						$actionReflection = $ctrlReflection->getMethod($actionName . 'Action');
+						if ($actionReflection instanceof \ReflectionMethod) {
+							$line = $actionReflection->getStartLine();
+							$file = $actionReflection->getFileName(); // methoud soub be in some sub-trait
+							$result = [
+								\Tracy\Helpers::editorUri($file, $line),
+								$fullControllerClassName . ':' . $actionName . 'Action'
+							];
+						}
+					}
 				}
 			}
 		} catch (\Throwable $e) {
