@@ -5,14 +5,14 @@
 	include_once(__DIR__ . '/routing.panel.css');
 ?></style>
 <div class="tracy-panel-routing">
-	<h1><?php echo $view->panelTitle; ?></h1>
-	<?php if (!empty($view->requestedUrl)): ?>
+	<h1><?php echo $this->view->panelTitle; ?></h1>
+	<?php if (!empty($this->view->requestedUrl)): ?>
 		<p class="requested-url">
-			<?php echo $view->requestedUrl->method; ?>
-			<?php echo $view->requestedUrl->baseUrl; ?><span><?php echo $view->requestedUrl->path; ?></span>
+			<?php echo $this->view->requestedUrl->method; ?>
+			<?php echo $this->view->requestedUrl->baseUrl; ?><span><?php echo $this->view->requestedUrl->path; ?></span>
 		</p>
 	<?php endif ?>
-	<?php if (empty($view->items)): ?>
+	<?php if (empty($this->view->items)): ?>
 		<p>No routes defined.</p>
 	<?php else: ?>
 		<table class="routes-configuration">
@@ -26,7 +26,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				<?php foreach ($view->items as & $item): ?>
+				<?php foreach ($this->view->items as & $item): ?>
 					<tr class="<?php
 						echo ($item->matched == 1) ? 'matched-by-route' : (($item->matched == 2) ? 'matched-by-default' : '');
 					?>">

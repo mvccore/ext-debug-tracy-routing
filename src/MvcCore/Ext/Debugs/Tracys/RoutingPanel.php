@@ -109,8 +109,8 @@ class RoutingPanel implements \Tracy\IBarPanel {
 	 */
 	public function getTab() {
 		ob_start();
-		$view = $this->getViewData();
-		if ($view) include(__DIR__ . '/routing.tab.phtml');
+		if ($this->completeViewData());
+			include(__DIR__ . '/routing.tab.phtml');
 		return ob_get_clean();
 	}
 	/**
@@ -120,8 +120,8 @@ class RoutingPanel implements \Tracy\IBarPanel {
 	 */
 	public function getPanel() {
 		ob_start();
-		$view = $this->getViewData();
-		if ($view) include(__DIR__ . '/routing.panel.phtml');
+		if ($this->completeViewData());
+			include(__DIR__ . '/routing.panel.phtml');
 		return ob_get_clean();
 	}
 	/**
@@ -131,11 +131,13 @@ class RoutingPanel implements \Tracy\IBarPanel {
 	 * - complete panel title
 	 * - complete routes table items
 	 * - set result data into static field
-	 * @return object
+	 * @return bool
 	 */
-	public function getViewData () {
-		if ($this->view !== NULL) return $this->view;
+	public function completeViewData () {
+		if ($this->view !== NULL) 
+			return TRUE;
 		$this->view = new \stdClass;
+		$result = TRUE;
 		try {
 			// complete basic \MvcCore core objects to complete other view data
 			$this->initMainApplicationProperties();
@@ -150,10 +152,11 @@ class RoutingPanel implements \Tracy\IBarPanel {
 		} catch (\Throwable $e) {
 			$this->_debug($e);
 			$this->_debug($e->getTrace());
+			$result = FALSE;
 		}
 		// debug code
 		$this->view->_debugCode = $this->_debugCode;
-		return $this->view;
+		return $result;
 	}
 
 	/**
@@ -176,7 +179,7 @@ class RoutingPanel implements \Tracy\IBarPanel {
 			$this->currentRoute ? $this->currentRoute->GetMatchedParams() : [],
 			array_keys($_GET)
 		));
-		$this->requestParams = & $this->request->GetParams(['#[\<\>\'"]#' => ''], array_keys($getParamsKeys));
+		$this->requestParams = $this->request->GetParams(['#[\<\>\'"]#' => ''], array_keys($getParamsKeys));
 		if (method_exists($this->router, 'GetDefaultLocalization')) {
 			/** @var \MvcCore\Ext\Routers\ILocalization $localizedRouter */
 			$localizedRouter = $this->router;
